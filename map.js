@@ -45,8 +45,8 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
 			
 			for( var xmlPoint of xmlPoints )
 			{
-				var x = parseFloat( xmlPoint.getAttribute( 'x' ) ),
-					y = parseFloat( xmlPoint.getAttribute( 'y' ) );
+				var x = parseFloat( xmlPoint.getAttribute( 'x' ) || '0' ),
+					y = parseFloat( xmlPoint.getAttribute( 'y' ) || '0' );
 				
 				result.push( new THREE.Vector2( x, y ) );
 			}
@@ -59,6 +59,7 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
 		map[name].push( ...extractVectors( 'mxPoint[as="sourcePoint"' ) );
 		map[name].push( ...extractVectors( 'Array[as="points"] mxPoint' ) );
 		map[name].push( ...extractVectors( 'mxPoint[as="targetPoint"' ) );
+		
 	}
 	
 	mapData( map );
@@ -74,6 +75,8 @@ function mapData( map )
 	for( var name in map )
 		if( name!='BG' )
 		{
+			//console.log( 'Region', name );
+			//console.log( map[name] );
 			var e = 15+240*Math.random();
 				var region = generateCountry( map[name], new THREE.Color( 1, e/255, e/255 ), 10 );
 					region.position.copy( country.position );
@@ -92,7 +95,8 @@ function mapData( map )
 
 	var geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
 		geometry.computeBoundingBox();
-		
+		geometry.computeBoundingSphere();
+	
 	var scale = CFG.MAP_WIDTH/(geometry.boundingBox.max.x - geometry.boundingBox.min.x);
 	
 	var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( {color: color, shininess:100} ) );
