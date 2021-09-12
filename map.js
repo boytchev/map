@@ -61,9 +61,31 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
 			//...extractVectors( 'mxPoint[as="targetPoint"' )
 		];
 		
+		// fix sharp edges
+		for( var i=0; i<points.length; i++ )
+		{
+			var iPrevPrev = (i-2+points.length)%points.length,
+				iPrev     = (i-1+points.length)%points.length,
+				iNext     = (i+1)%points.length,
+				iNextNext = (i+2)%points.length;
+				
+			var distPrev = points[iPrev].distanceTo(points[i]),
+				distNext = points[iNext].distanceTo(points[i]);
+			
+			if( distPrev<10 && distNext<10 )
+			{
+				// point [i] is vertex, realign previous and next points
+				points[iPrev] = points[iPrev].lerpVectors( points[i], points[iPrevPrev], 0.001 );
+				points[iNext] = points[iNext].lerpVectors( points[i], points[iNextNext], 0.001 );
+			}
+					
+		}
+		
+		
+		
 		// generate rounded shape
 		var shape = new THREE.Shape( ),
-			roundness = 10;
+			roundness = CFG.ROUNDNESS;
 
 		var v = new THREE.Vector2();
 		
@@ -131,7 +153,7 @@ function generateCountry( mapShape, color = 'white', height = 1 )
 
 function generateProvince( country, mapShape, color = 'white', height = 1 )
 {
-	var extrudeSettings = { depth: 1, bevelEnabled: true, bevelSegments: 10, steps: 1, bevelSize: 5, bevelThickness: 5 };
+	var extrudeSettings = { depth: 1, bevelEnabled: !true, bevelSegments: 10, steps: 1, bevelSize: 5, bevelThickness: 5 };
 
 	var geometry = new THREE.ExtrudeGeometry( mapShape, extrudeSettings );
 		geometry.computeBoundingBox();
@@ -147,7 +169,7 @@ function generateProvince( country, mapShape, color = 'white', height = 1 )
 					} );
 					
 	var mesh = new THREE.Mesh( geometry, material );
-		mesh.position.set( country.position.x, height, country.position.z );
+		mesh.position.set( country.position.x, height+0.01, country.position.z );
 		mesh.scale.set( country.scale.x, country.scale.y, height );
 		mesh.rotation.copy( country.rotation );
 		mesh.castShadow = true;
@@ -167,7 +189,7 @@ function generateCountryBorder( mapShape, color = 'black', height = 1 )
 	var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( {color: color} ) );
 		line.position.x = -scale*(geometry.boundingBox.max.x+geometry.boundingBox.min.x)/2;
 		line.position.z = -scale*(geometry.boundingBox.max.y+geometry.boundingBox.min.y)/2;
-		line.position.y = height+0.01;
+		line.position.y = height+0.02;
 		line.scale.set( scale, scale, 1 );
 		line.rotation.x = Math.PI/2;
 
@@ -180,7 +202,7 @@ function generateProvinceBorder( country, mapShape, color = 'black', height = 1 
 	var geometry = new THREE.BufferGeometry().setFromPoints( mapShape.extractPoints(12).shape );
 
 	var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( {color: color} ) );
-		line.position.set( country.position.x, height+0.01, country.position.z );
+		line.position.set( country.position.x, height+0.02, country.position.z );
 		line.scale.copy( country.scale );
 		line.rotation.copy( country.rotation );
 
@@ -190,21 +212,22 @@ function generateProvinceBorder( country, mapShape, color = 'black', height = 1 
 
  function mapData( map )
 {
-	var country = generateCountry( map.BG, 'crimson', 0.5 );
-	var countryBorder = generateCountryBorder( map.BG, 'black', 0.5 );
-	scene.add( country, countryBorder );
+	var country = generateCountry( map.BG, 'crimson', 1 );
+	var countryBorder = generateCountryBorder( map.BG, 'black', 10.5 );
+	//scene.add( country );
+	//scene.add( /*country,*/ countryBorder );
 
 	for( var name in map )
 		if( name!='BG' )
 		{
 			var e = 15+240*Math.random();
-			var province = generateProvince( country, map[name], new THREE.Color( 1, e/255, e/255 ), 0.5 );
+			var province = generateProvince( country, map[name], new THREE.Color( e/255, e/255, 1-e/255 ), e/200 );
 			
-			//scene.add( province );
+			scene.add( province );
 
-			var provinceBorder = generateProvinceBorder( countryBorder, map[name], 'black', 0.5 );
+			var provinceBorder = generateProvinceBorder( country, map[name], 'black', e/200 );
 			
-			scene.add( provinceBorder );
+			//scene.add( provinceBorder );
 		}
 		
 }

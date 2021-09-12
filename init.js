@@ -44,7 +44,7 @@ var light = new THREE.SpotLight( 'white' );
 
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
 	controls.maxPolarAngle = Math.PI * 0.4;
-	controls.minDistance = 5;
+	controls.minDistance = 1;
 	controls.maxDistance = 70;
 	controls.enableDamping = !true;
 	controls.dampingFactor = 0.5;
