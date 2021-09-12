@@ -1,24 +1,110 @@
 ﻿<!DOCTYPE html>
 
 <html>
-	<head>
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<script src="./js/three.min.js"></script>
-		<script src="./js/OrbitControls.js"></script>
-		<link rel="stylesheet" href="./css/bgmap.css">
-	</head>
-	
-	<body>
-		<script type="module">
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<script src="./js/three.min.js"></script>
+	<script src="./js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="./css/bgmap.css">
+</head>
 
-			import './init.js';
-			import './config.js';
-			import './frame.js';
-			import './map.js';
+<body>
+	<script type="module">
+
+		import {scene} from './init.js';
+		import * as CFG from './config.js';
+		import './frame.js';
+		import {Map} from './map.js';
+
+		var map = new Map( `bgmap-level-${CFG.MAP_LEVEL}.xml`, createMap, {roundness:1, width:CFG.MAP_WIDTH, height:CFG.MAP_HEIGHT} );
 
 
-		</script>
-	</body>
+		function createMap( map )
+		{
+			/*
+			// create the country
+			var geometry = map.mapGeometry3D( 'BG' ),
+				material = new THREE.MeshStandardMaterial( {
+								color: 'crimson',
+								roughness: 1,
+								metalness: 0,
+								polygonOffset: true,
+								polygonOffsetUnits: -0.1,
+								polygonOffsetFactor: -0.1,
+							} );
+							
+			var country = new THREE.Mesh( geometry, material );
+				country.castShadow = true;
+				country.receiveShadow = true;
+
+			scene.add( country );
+			
+			
+			// create the border of the country
+			var geometry = map.mapGeometry2D( 'BG' ),
+				material = new THREE.MeshStandardMaterial( {color: 'black'} );
+
+			var border = new THREE.Line( geometry, material );
+
+			scene.add( border );
+		*/
+
+			// create the provinces
+			for( var name in map.regions ) if( name!='BG' )
+			{
+				var value = Math.random();
+				
+				var geometry = map.mapGeometry3D( name ),
+					material = new THREE.MeshStandardMaterial( {
+									color: new THREE.Color( value, 0, 1-value ),
+									roughness: 1,
+									metalness: 0,
+									polygonOffset: true,
+									polygonOffsetUnits: -0.1,
+									polygonOffsetFactor: -0.1,
+								} );
+								
+				var province = new THREE.Mesh( geometry, material );
+					province.castShadow = true;
+					province.receiveShadow = true;
+					province.scale.y = 1+3*value;
+					
+				scene.add( province );
+				
+				
+				// create the border of the country
+				var geometry = map.mapGeometry2D( name ),
+					material = new THREE.MeshStandardMaterial( {
+									color: 'black',
+									transparent: true,
+									opacity: 0.2,
+								} );
+
+				var border = new THREE.Line( geometry, material );
+					border.scale.y = 1+3*value;
+
+				scene.add( border );
+			}
+			
+		/*
+			for( var name in map )
+				if( name!='BG' )
+				{
+					var e = 15+240*Math.random();
+					var province = generateProvince( country, map[name], new THREE.Color( e/255, e/255, 1-e/255 ), e/200 );
+					
+					scene.add( province );
+
+					var provinceBorder = generateProvinceBorder( country, map[name], 'black', e/200 );
+					
+					//scene.add( provinceBorder );
+				}
+		*/		
+		}
+		 
+		 
+	</script>
+</body>
 </html>
 
 
