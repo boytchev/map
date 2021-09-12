@@ -6,6 +6,9 @@ a 2D conrour (also `THREE.BufferGeometry` but `for THREE.Line`).
 
 It is possible to apply rounding of borders.
 
+The shapes of provinces are manually crafted in diagrams.net, exported
+to XML and imported to `maps.js`.
+
 September, 2021
 
 
