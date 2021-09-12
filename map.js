@@ -15,7 +15,7 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
  
  
  
- 
+ // parses XML DOM into object with elements province names and values THREE.Shape
  function parseXML( xml )
  {
 	var xmlElems = xml.getElementsByTagName( 'mxCell' );
@@ -53,13 +53,43 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
 			
 			return result;
 		}
-		 
-		map[name] = [];
 		
-		map[name].push( ...extractVectors( 'mxPoint[as="sourcePoint"' ) );
-		map[name].push( ...extractVectors( 'Array[as="points"] mxPoint' ) );
-		map[name].push( ...extractVectors( 'mxPoint[as="targetPoint"' ) );
+		// collect arra of all vertices
+		var points = [
+			...extractVectors( 'mxPoint[as="sourcePoint"' ),
+			...extractVectors( 'Array[as="points"] mxPoint' ),
+			//...extractVectors( 'mxPoint[as="targetPoint"' )
+		];
 		
+		// generate rounded shape
+		var shape = new THREE.Shape( ),
+			roundness = 10;
+
+		var v = new THREE.Vector2();
+		
+		function lerp( idx1, idx2, start )
+		{
+			var distance = points[idx1].distanceTo(points[idx2]),
+				alpha = THREE.Math.clamp( roundness/distance, 0, 0.5 );
+			v.lerpVectors( points[idx1], points[idx2], start?alpha:1-alpha );
+		}
+		
+		lerp( 0, 1, true );
+		shape.moveTo( v.x, v.y );
+
+		for( var i=0; i<points.length; i++ )
+		{
+			var i1 = (i+1)%points.length,
+				i2 = (i+2)%points.length;
+			
+			lerp( i, i1, false );
+			shape.lineTo( v.x, v.y );
+			
+			lerp( i1, i2, true );
+			shape.quadraticCurveTo( points[i1].x, points[i1].y, v.x, v.y );
+		}			
+
+		map[name] = shape;
 	}
 
 	mapData( map );
@@ -67,57 +97,116 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
  
  
  
-function mapData( map )
+function generateCountry( mapShape, color = 'white', height = 1 )
 {
-	var country = generateCountry( map.BG, 'crimson' );
-		//scene.add( country );
+	var extrudeSettings = { depth: 1, bevelEnabled: !true, bevelSegments: 10, steps: 1, bevelSize: 5, bevelThickness: 5 };
+
+	var geometry = new THREE.ExtrudeGeometry( mapShape, extrudeSettings );
+		geometry.computeBoundingBox();
+		geometry.computeBoundingSphere();
+
+	var material = new THREE.MeshStandardMaterial( {
+						color: color,
+						roughness: 1,
+						metalness: 0,
+						polygonOffset: true,
+						polygonOffsetUnits: -0.1,
+						polygonOffsetFactor: -0.1,
+					} );
+					
+	var scale = CFG.MAP_WIDTH/(geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+
+	var mesh = new THREE.Mesh( geometry, material );
+		mesh.position.x = -scale*(geometry.boundingBox.max.x+geometry.boundingBox.min.x)/2;
+		mesh.position.z = -scale*(geometry.boundingBox.max.y+geometry.boundingBox.min.y)/2;
+		mesh.position.y = height;
+		mesh.scale.set( scale, scale, height );
+		mesh.rotation.x = Math.PI/2;
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
+
+	return mesh;
+}
+
+
+function generateProvince( country, mapShape, color = 'white', height = 1 )
+{
+	var extrudeSettings = { depth: 1, bevelEnabled: true, bevelSegments: 10, steps: 1, bevelSize: 5, bevelThickness: 5 };
+
+	var geometry = new THREE.ExtrudeGeometry( mapShape, extrudeSettings );
+		geometry.computeBoundingBox();
+		geometry.computeBoundingSphere();
+
+	var material = new THREE.MeshStandardMaterial( {
+						color: color,
+						roughness: 1,
+						metalness: 0,
+						polygonOffset: true,
+						polygonOffsetUnits: -0.1,
+						polygonOffsetFactor: -0.1,
+					} );
+					
+	var mesh = new THREE.Mesh( geometry, material );
+		mesh.position.set( country.position.x, height, country.position.z );
+		mesh.scale.set( country.scale.x, country.scale.y, height );
+		mesh.rotation.copy( country.rotation );
+		mesh.castShadow = true;
+		mesh.receiveShadow = true;
+
+	return mesh;
+}
+
+
+function generateCountryBorder( mapShape, color = 'black', height = 1 )
+{
+	var geometry = new THREE.BufferGeometry().setFromPoints( mapShape.extractPoints(12).shape );
+		geometry.computeBoundingBox();
+		
+	var scale = CFG.MAP_WIDTH/(geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+
+	var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( {color: color} ) );
+		line.position.x = -scale*(geometry.boundingBox.max.x+geometry.boundingBox.min.x)/2;
+		line.position.z = -scale*(geometry.boundingBox.max.y+geometry.boundingBox.min.y)/2;
+		line.position.y = height+0.01;
+		line.scale.set( scale, scale, 1 );
+		line.rotation.x = Math.PI/2;
+
+	return line;
+}
+
+
+function generateProvinceBorder( country, mapShape, color = 'black', height = 1 )
+{
+	var geometry = new THREE.BufferGeometry().setFromPoints( mapShape.extractPoints(12).shape );
+
+	var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( {color: color} ) );
+		line.position.set( country.position.x, height+0.01, country.position.z );
+		line.scale.copy( country.scale );
+		line.rotation.copy( country.rotation );
+
+	return line;
+}
+
+
+ function mapData( map )
+{
+	var country = generateCountry( map.BG, 'crimson', 0.5 );
+	var countryBorder = generateCountryBorder( map.BG, 'black', 0.5 );
+	scene.add( country, countryBorder );
 
 	for( var name in map )
 		if( name!='BG' )
 		{
-//			console.log( 'Region', name );
-//			console.log( map[name] );
 			var e = 15+240*Math.random();
-				var region = generateCountry( map[name], new THREE.Color( 1, e/255, e/255 ), 10 );
-					region.position.copy( country.position );
-					region.scale.copy( country.scale );
-					region.position.y = country.position.y/10*10 ;
-				scene.add( region );
-				
-//				const edges = new THREE.EdgesGeometry( region.geometry, 10 );
-//const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0 } ) );
-//line.position.copy( region.position );
-//line.scale.copy( region.scale );
-//line.rotation.copy( region.rotation );
+			var province = generateProvince( country, map[name], new THREE.Color( 1, e/255, e/255 ), 0.5 );
+			
+			//scene.add( province );
 
-//scene.add( line );
+			var provinceBorder = generateProvinceBorder( countryBorder, map[name], 'black', 0.5 );
+			
+			scene.add( provinceBorder );
 		}
- }
- 
- 
- function generateCountry( mapShape, color = 'white', elevation = 20 )
- {
-	var shape = new THREE.Shape( mapShape );
-	 
-	var extrudeSettings = { depth: elevation, bevelEnabled: !true, bevelSegments: 10, steps: 1, bevelSize: 5, bevelThickness: 5 };
-
-	var geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-		geometry.computeBoundingBox();
-		geometry.computeBoundingSphere();
-	
-	var scale = CFG.MAP_WIDTH/(geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-	
-	var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( {color: color, shininess:100} ) );
-		mesh.position.x = -scale*(geometry.boundingBox.max.x+geometry.boundingBox.min.x)/2;
-		mesh.position.z = -scale*(geometry.boundingBox.max.y+geometry.boundingBox.min.y)/2;
-		mesh.position.y = scale*elevation;
-		mesh.scale.set( scale, scale, scale );
-		mesh.rotation.x = Math.PI/2;
-		mesh.castShadow = true;
-		mesh.receiveShadow = true;
-	
-	return mesh;
- }
- 
+		
+}
  
  

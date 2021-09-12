@@ -13,7 +13,7 @@ var scene = new THREE.Scene();
 
 
 var camera = new THREE.PerspectiveCamera( 60, 1, 1, 1000 );
-	camera.position.set( 15, 80, 30 );
+	camera.position.set( 0, 30, 0 );
 	camera.lookAt( scene.position );
 
 
@@ -44,8 +44,8 @@ var light = new THREE.SpotLight( 'white' );
 
 var controls = new THREE.OrbitControls( camera, renderer.domElement );
 	controls.maxPolarAngle = Math.PI * 0.4;
-	controls.minDistance = 20;
-	controls.maxDistance = 130;
+	controls.minDistance = 5;
+	controls.maxDistance = 70;
 	controls.enableDamping = !true;
 	controls.dampingFactor = 0.5;
 	controls.rotateSpeed = 0.3;
