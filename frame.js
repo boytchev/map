@@ -16,7 +16,7 @@ class Frame extends THREE.Mesh
 						);
 
 		var material = new THREE.MeshStandardMaterial( {
-							color: 'dimgray',
+							color: 'gray',
 							roughness: 1,
 							metalness: 0,
 							emissive: 'cornflowerblue',

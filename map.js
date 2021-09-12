@@ -61,7 +61,7 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
 		map[name].push( ...extractVectors( 'mxPoint[as="targetPoint"' ) );
 		
 	}
-	
+
 	mapData( map );
  }
  
@@ -69,20 +69,28 @@ fetch(`bgmap-level-${CFG.MAP_LEVEL}.xml`)
  
 function mapData( map )
 {
-	var country = generateCountry( map.BG, 'crimson', 10 );
+	var country = generateCountry( map.BG, 'crimson' );
 		//scene.add( country );
 
 	for( var name in map )
 		if( name!='BG' )
 		{
-			//console.log( 'Region', name );
-			//console.log( map[name] );
+//			console.log( 'Region', name );
+//			console.log( map[name] );
 			var e = 15+240*Math.random();
 				var region = generateCountry( map[name], new THREE.Color( 1, e/255, e/255 ), 10 );
 					region.position.copy( country.position );
 					region.scale.copy( country.scale );
-					region.position.y = country.position.y/10*10;
+					region.position.y = country.position.y/10*10 ;
 				scene.add( region );
+				
+//				const edges = new THREE.EdgesGeometry( region.geometry, 10 );
+//const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0 } ) );
+//line.position.copy( region.position );
+//line.scale.copy( region.scale );
+//line.rotation.copy( region.rotation );
+
+//scene.add( line );
 		}
  }
  
@@ -91,7 +99,7 @@ function mapData( map )
  {
 	var shape = new THREE.Shape( mapShape );
 	 
-	var extrudeSettings = { depth: elevation, bevelEnabled: true, bevelSegments: 10, steps: 1, bevelSize: 5, bevelThickness: 5 };
+	var extrudeSettings = { depth: elevation, bevelEnabled: !true, bevelSegments: 10, steps: 1, bevelSize: 5, bevelThickness: 5 };
 
 	var geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
 		geometry.computeBoundingBox();
