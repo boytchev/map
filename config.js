@@ -15,4 +15,4 @@ export const MAP_HEIGHT = 28;
 export const MAP_THICK = 1;
 export const MAP_BORDER = 2;
 
-export const MAP_LEVEL = 1;
+export const MAP_LEVEL = 2;
