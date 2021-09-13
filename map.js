@@ -8,6 +8,8 @@
 //	private
 //		parseXML( xml )
 
+import {BufferGeometryUtils} from './js/BufferGeometryUtils.js';
+
 
 // load astnchonously XML file with map data
 export class Map
@@ -17,7 +19,28 @@ export class Map
 	{
 		this.regions = {}; // THREE.Shape objects
 		this.onLoad = onLoad; // called when the map regions are created
+		this.context = null;
 
+		var img = new Image();
+		var that = this;
+		
+		img.onload = function()
+		{
+			var canvas = document.createElement( 'canvas' );
+			canvas.width = img.width;
+			canvas.height = img.height;
+			
+			that.context = canvas.getContext( '2d' );
+			that.context.drawImage( img, 0, 0 );
+			
+//			console.log('w',img.width,img.height);
+			
+			fetch( xmlFilename )
+			  .then( response => response.text() )
+			  .then( text => that.#parseXML( new DOMParser().parseFromString(text,"text/xml") ) );
+		}
+
+  
 		this.scale = 1;
 		this.center = {x:0, z:0};
 		this.options = options || {};
@@ -25,10 +48,10 @@ export class Map
 		this.options.roundness = this.options.roundness ? this.options.roundness : 25;
 		this.options.width = this.options.width ? this.options.width : 1;
 		this.options.height = this.options.height ? this.options.height : 1;
-		
-		fetch( xmlFilename )
-		  .then( response => response.text() )
-		  .then( text => this.#parseXML( new DOMParser().parseFromString(text,"text/xml") ) );
+
+//		img.src = './diagrams/heightmap.jpg';
+		img.src = './diagrams/heightmap - Copy.jpg';
+
 	} // Map
  
  
@@ -97,7 +120,7 @@ export class Map
 				var distPrev = points[iPrev].distanceTo(points[i]),
 					distNext = points[iNext].distanceTo(points[i]);
 				
-				if( distPrev<10 && distNext<10 )
+				if( distPrev<7 && distNext<7 )
 				{
 					// point [i] is vertex, realign previous and next points
 					points[iPrev] = points[iPrev].lerpVectors( points[i], points[iPrevPrev], 0.001 );
@@ -146,6 +169,37 @@ export class Map
 	} // Map.parseXML
  
 	
+	heightmapGeometry3D( )
+	{
+		var geometry = new THREE.BoxGeometry( this.options.width, 1, this.options.height, 250*3, 1, 150*3 )
+		
+		//geometry.computeVertexNormals();
+
+		var pos = geometry.getAttribute( 'position' );
+		var nor = geometry.getAttribute( 'normal' );
+		for( var i=0; i<pos.count; i++ )
+//if( nor.getY(i)>0.9 )
+			{
+				var x = pos.getX( i ),
+					z = pos.getZ( i );
+					
+				var xx = Math.round(1431*(x+this.options.width/2)/this.options.width);
+				var yy = Math.round(925*(z+this.options.height/2)/this.options.height);
+				
+				var pixel = this.context.getImageData( xx, yy, 1, 1 ).data[0];
+		
+				pos.setY( i, pos.getY(i)+3*Math.pow(pixel/255,2) );
+			}
+	
+//console.log(geometry.getAttribute( 'position' ).count);	
+//		geometry = BufferGeometryUtils.mergeVertices( geometry, 0.1 );
+//console.log(geometry.getAttribute( 'position' ).count);	
+
+		geometry.computeVertexNormals();
+		
+		return geometry;
+	}
+	
 	mapGeometry3D( regionName )
 	{
 		var shape = this.regions[regionName],
@@ -154,7 +208,12 @@ export class Map
 				.rotateX( Math.PI/2 )
 				.scale( this.scale, 1, this.scale )
 				.translate( this.center.x, 1, this.center.z );
-				
+
+		if( this.options.heightmap )
+		{
+			geometry = this.tesselate( geometry );
+		}
+		
 		return geometry;
 	} // Map.mapGeometry3D
  
