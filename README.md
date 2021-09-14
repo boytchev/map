@@ -15,16 +15,16 @@ To draw the outline of Bulgaria we use create instance of `Map`,
 then we get the geometry of the outline via its method `mapGeometry2D`.
 
 ```javascript
-import {Map} from './map.js';
-
-var map = new Map( 'bgmap-level-0.xml', createMap );
+new Map( 'bgmap-level-0.xml', createMap );
 
 function createMap( map )
 {
-	var geometry = map.mapGeometry2D( 'BG' );
-	var material = new THREE.LineBasicMaterial( {color: 'black'} );
+	var geometry, material, region;
+	
+	geometry = map.mapGeometry2D( 'BG' );
+	material = new THREE.LineBasicMaterial(...);
 
-	var region = new THREE.Line( geometry, material );
+	region = new THREE.Line( geometry, material );
 
 	scene.add( region );
 }
