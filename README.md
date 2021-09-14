@@ -14,7 +14,7 @@ to XML and imported to `maps.js`.
 To draw the outline of Bulgaria we use create instance of `Map`,
 then we get the geometry of the outline via its method `mapGeometry2D`.
 
-```
+```javascript
 import {Map} from './map.js';
 
 var map = new Map( 'bgmap-level-0.xml', createMap );
