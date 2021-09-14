@@ -30,7 +30,7 @@ function createMap( map )
 }
 ```
 
-[<img src="snapshots/example-1.jpg" width="150">](https://boytchev.github.io/bgmap/example-1.html)
+[<img src="snapshots/example-1.jpg">](https://boytchev.github.io/bgmap/example-1.html)
 
 
 September, 2021
