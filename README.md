@@ -11,26 +11,35 @@ to XML and imported to `maps.js`.
 
 ## Examples
 
-To draw the outline of Bulgaria we use create instance of `Map`,
-then we get the geometry of the outline via its method `mapGeometry2D`.
+## Bulgaria outline
 
 ```javascript
-new Map( 'bgmap-level-0.xml', createMap );
+geometry = map.mapGeometry2D( 'BG' );
+material = new THREE.LineBasicMaterial(...);
 
-function createMap( map )
+region = new THREE.Line( geometry, material );
+
+scene.add( region );
+```
+
+[<img src="snapshots/example-1.jpg">](https://boytchev.github.io/bgmap/example-1.html)
+
+
+## Bulgarian provinces outlines
+
+```javascript
+for( name in map.regions ) if( name!='BG' )
 {
-	var geometry, material, region;
-	
-	geometry = map.mapGeometry2D( 'BG' );
+	geometry = map.mapGeometry2D( name );
 	material = new THREE.LineBasicMaterial(...);
-
+	
 	region = new THREE.Line( geometry, material );
-
+		
 	scene.add( region );
 }
 ```
 
-[<img src="snapshots/example-1.jpg">](https://boytchev.github.io/bgmap/example-1.html)
+[<img src="snapshots/example-2.jpg">](https://boytchev.github.io/bgmap/example-2.html)
 
 
 September, 2021
