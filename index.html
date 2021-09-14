@@ -5,21 +5,24 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<script src="./js/three.min.js"></script>
 	<script src="./js/OrbitControls.js"></script>
-	<!--script src="./js/TessellateModifier.js"></script-->
+	<script src="./js/TessellateModifier.js"></script>
 	<link rel="stylesheet" href="./css/bgmap.css">
 </head>
 
 <body>
 	<script type="module">
-
+		//import CSG from './js/three-csg.js';
+		
 		import {scene} from './init.js';
-		import * as CFG from './config.js';
-		import './frame.js';
+		//import * as CFG from './config.js';
+		//import './frame.js';
 		import {Map} from './map.js';
 
-		var map = new Map( `bgmap-level-${CFG.MAP_LEVEL}.xml`, createMap3D, {roundness:25, width:CFG.MAP_WIDTH, height:CFG.MAP_HEIGHT} );
+		var map = new Map( `bgmap-level-${CFG.MAP_LEVEL}.xml`, createMap, {roundness:1, width:CFG.MAP_WIDTH, height:CFG.MAP_HEIGHT} );
 
-
+		var normal = new THREE.TextureLoader().load( './diagrams/heightmap-normal.jpg' );
+		var height = new THREE.TextureLoader().load( './diagrams/heightmap.jpg' );
+			
 		function createMap3D( map )
 		{
 			var geometry = map.heightmapGeometry3D( ),
@@ -30,16 +33,22 @@
 								//emissiveIntensity: -1,
 								//flatShading: true,
 							} );
-							
+						
 		var material = new THREE.MeshStandardMaterial( {
-							color: 'gray',
-							roughness: 0.6,
-							metalness: 0.9,
-							emissive: 'cornflowerblue',
-							emissiveIntensity: 0.2,
+							color: 'coral',
+							roughness: 1,
+							metalness: 0.0,
+							normalMap: normal,
+							//displacementMap: height,
+							//displacementScale: 4,
+							//bumpMap: height,
+							//bumpScale: 10,
+							normalScale: new THREE.Vector2(1,1),
+							//emissive: 'cornflowerblue',
+							//emissiveIntensity: 0.2,
 							polygonOffset: true,
-							polygonOffsetUnits: 2,
-							polygonOffsetFactor: 2,
+							polygonOffsetUnits: -2,
+							polygonOffsetFactor: -2,
 						} );
 
 			var country = new THREE.Mesh( geometry, material );
@@ -78,13 +87,14 @@
 
 			//scene.add( border );
 		
-
+*/
+/*
 			// create the provinces
 			for( var name in map.regions ) if( name!='BG' )
 			{
 				var value = Math.random();
 				//var value = 1;
-				
+console.log(name);				
 				var geometry = map.mapGeometry3D( name ),
 					material = new THREE.MeshStandardMaterial( {
 									color: new THREE.Color( value, 0, 1-value ),
@@ -98,11 +108,11 @@
 				var province = new THREE.Mesh( geometry, material );
 					province.castShadow = true;
 					province.receiveShadow = true;
-					province.scale.y = 3*value;
+					//province.scale.y = 3*value;
 					
 				scene.add( province );
-				
-				
+				*/
+	/*			
 				// create the border of the country
 				var geometry = map.mapGeometry2D( name ),
 					material = new THREE.MeshStandardMaterial( {

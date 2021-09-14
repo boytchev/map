@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<script src="./js/three.min.js"></script>
+	<script src="./js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="./css/bgmap.css">
+</head>
+
+<body>
+	<script>
+		const MAP_WIDTH = 45;
+		const MAP_HEIGHT = 28;
+	</script>
+
+	
+	<script type="module">
+		import {scene} from './init.js';
+		import {Map} from './map.js';
+
+		var map = new Map( 'bgmap-level-0.xml', createMap );
+
+		function createMap( map )
+		{
+			var geometry, material, region;
+
+			for( var name in map.regions ) if( name!='BG' )
+			{
+				// province in color
+				geometry = map.mapGeometry3D( name );
+				material = new THREE.MeshStandardMaterial( {
+								color: new THREE.Color( Math.random(), Math.random(), Math.random() ),
+								roughness: 1,
+								metalness: 0,
+							} );
+							
+				region = new THREE.Mesh( geometry, material );
+				region.castShadow = true;
+					
+				scene.add( region );
+
+				// province outline
+				geometry = map.mapGeometry2D( name ),
+				material = new THREE.LineBasicMaterial( {color: 'black'} );
+				
+				region = new THREE.Line( geometry, material );
+					
+				scene.add( region );
+			}
+		}
+		 
+		 
+	</script>
+</body>
+</html>
+
+

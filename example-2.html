@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<script src="./js/three.min.js"></script>
+	<script src="./js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="./css/bgmap.css">
+</head>
+
+<body>
+	<script>
+		const MAP_WIDTH = 45;
+		const MAP_HEIGHT = 28;
+	</script>
+
+	
+	<script type="module">
+		import {scene} from './init.js';
+		import {Map} from './map.js';
+
+		var map = new Map( 'bgmap-level-0.xml', createMap );
+
+		function createMap( map )
+		{
+			// scan regions
+			for( var name in map.regions ) if( name!='BG' )
+			{
+				var geometry = map.mapGeometry2D( name );
+				var material = new THREE.LineBasicMaterial( {color: 'black'} );
+				
+				var region = new THREE.Line( geometry, material );
+					
+				scene.add( region );
+			}
+		}
+		 
+		 
+	</script>
+</body>
+</html>
+
+
