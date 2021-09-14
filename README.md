@@ -1,5 +1,13 @@
 # bgmap
-Low-poly map of provinces in Bulgaria. The file `maps.js` defines
+Low-poly map of provinces in Bulgaria.
+
+[<img src="snapshots/example-1.jpg" width="75">](https://boytchev.github.io/bgmap/example-1.html)
+[<img src="snapshots/example-2.jpg" width="75">](https://boytchev.github.io/bgmap/example-2.html)
+[<img src="snapshots/example-3.jpg" width="75">](https://boytchev.github.io/bgmap/example-3.html)
+[<img src="snapshots/example-4.jpg" width="75">](https://boytchev.github.io/bgmap/example-4.html)
+[<img src="snapshots/example-5.jpg" width="75">](https://boytchev.github.io/bgmap/example-5.html)
+
+The file `maps.js` defines
 the class `Map` that returns a province or the whole country either
 as a 3D mesh (i.e. `THREE.BufferGeometry` for `THREE.Mesh`) or
 a 2D contour (also `THREE.BufferGeometry` but `for THREE.Line`).
