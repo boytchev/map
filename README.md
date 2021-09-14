@@ -11,10 +11,15 @@ to XML and imported to `maps.js`.
 
 ## Examples
 
-### Outline of Bulgaria
+The following examples show code sniplets. Click on the image 
+to run the example in real-rime in your browser. Use the mouse
+or finger (for touch screens) to control the viewpoint.
+
+
+### 1. Outline of Bulgaria
 
 The geometry for the outline of Bulgaria is retrieved by
-the method `mapGeometry2D` with parameter `BG`.
+the method `mapGeometry2D` with parameter `'BG'`.
 
 ```javascript
 geometry = map.mapGeometry2D( 'BG' );
@@ -26,7 +31,7 @@ region = new THREE.Line( geometry, material );
 [<img src="snapshots/example-1.jpg">](https://boytchev.github.io/bgmap/example-1.html)
 
 
-### Outlines of Bulgarian provinces
+### 2. Outlines of Bulgarian provinces
 
 The geometries for the outlines of provinces in Bulgaria are
 retrieved one by one by the method `mapGeometry2D` with
