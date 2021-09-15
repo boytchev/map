@@ -9,13 +9,13 @@ current map dataset is of Bulgaria and its provinces.
 
 The library is implemented as a single `map.js` file.
 
-### Constructor `Map`
+### Constructor
 It is initialized by generating an instance of the class `Map`.
 This instance is used to get a list of regions' names, the outline
 and the 3D shape of each region.
 
 ```javascript
-new Map( xmlFilename, drawMap, options );
+new Map( xmlFilename, drawMap, options )
 ```
 
 * `xmlFilename` is a name of an XML file defining the
@@ -37,7 +37,11 @@ The callback function `drawMap` has one parameter &ndash; an instance
 of the map. This function is the place where all the fun happens. 
 
 
-### Property `regions`
+### Regions' names
+
+```javascript
+map.regions
+```
 
 The instance has property `regions` which is an array of the names
 of all regions. These names are extracted from the XML files. The 
@@ -49,18 +53,26 @@ from the provinces regions is by name. The country region in file
 `map.xml` is `'BG'`.
 
 
-### Method `geometry2D`
+### Region outline
 
-The method `geometry2D( regionName )` generates the outline of
-a region (given its name) as a `THREE.BufferGeometry`
+```javascript
+geometry = map.geometry2D( regionName )
+```
+
+The method `geometry2D` generates the outline of
+the region called `regionName` as a `THREE.BufferGeometry`
 suitable for creating `THREE.Line` lines. The horizontal size
 of the region is scaled and positioned consistently with the
 whole country. The line is translated vertically by 1.
 
-### Method `geometry3D`
+### Region 3D shape
 
-Method `geometry3D( regionName )` generates the 3D shape of
-a region (given its name) as a `THREE.BufferGeometry` for 
+```javascript
+geometry = map.geometry3D( regionName )
+```
+
+The method `geometry3D` generates the 3D shape of
+the region called `regionName` as a `THREE.BufferGeometry` for 
 creating `THREE.Mesh` object. The horizontal size is scaled
 and positioned as the outline, the vertically the shape
 spans from 0 to 1.
