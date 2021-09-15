@@ -27,32 +27,15 @@
 
 		function drawMap( map )
 		{
-			var geometry, color, material, region, regionName;
+			for( var regionName in map.regions )
+				if( regionName!='BG' )
+				{
+					var color = new THREE.Color( 0xFFFFFF*Math.random() );
 
-			for( regionName in map.regions ) if( regionName!='BG' )
-			{
-				// province in color
-				geometry = map.geometry3D( regionName );
-				color = new THREE.Color( Math.random(), Math.random(), Math.random() );
-				material = new THREE.MeshStandardMaterial( {
-								color: color,
-								roughness: 1,
-								metalness: 0,
-							} );
-							
-				region = new THREE.Mesh( geometry, material );
-				region.castShadow = true;
-					
-				scene.add( region );
-
-				// province outline
-				geometry = map.geometry2D( regionName ),
-				material = new THREE.LineBasicMaterial( {color: 'black'} );
-				
-				region = new THREE.Line( geometry, material );
-					
-				scene.add( region );
-			}
+					// province in color
+					scene.add( map.region3D( regionName, 1, color ) );
+					scene.add( map.region2D( regionName, 1 ) );
+				}
 		}
 		 
 	</script>

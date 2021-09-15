@@ -27,31 +27,13 @@
 
 		function drawMap( map )
 		{
-			var geometry, material, region, regionName;
-			
 			// draw Bulgaria as 3D plate
-			geometry = map.geometry3D( 'BG' );
-			material = new THREE.MeshStandardMaterial( {
-							color: 'crimson',
-							roughness: 1,
-							metalness: 0,
-						} );
-							
-			region = new THREE.Mesh( geometry, material );
-			region.castShadow = true;
-
-			scene.add( region );
+			scene.add( map.region3D( 'BG', 1, 'crimson' ) );
 	
 			// draw provinces outlines
-			for( regionName in map.regions ) if( regionName!='BG' )
-			{
-				geometry = map.geometry2D( regionName );
-				material = new THREE.LineBasicMaterial( {color: 'black'} );
-				
-				region = new THREE.Line( geometry, material );
-					
-				scene.add( region );
-			}
+			for( var regionName in map.regions )
+				if( regionName!='BG' )
+					scene.add( map.region2D( regionName ) );
 		}
 		 
 		 

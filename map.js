@@ -2,9 +2,11 @@
 // bgmap.js
 //
 // class Map
-//		constructor( xmlFilename, onLoad, options )
-//		geometry3D( regionName ) - THREE.BufferGeometry for THREE.Mesh
-//		geometry2D( regionName ) - THREE.BufferGeometry for THREE.Line
+//		constructor( xmlFilename, onLoad, {options} )
+//		geometry3D( regionName )
+//		geometry2D( regionName )
+//		region3D ( regionName, {height}, {color} )
+//		region2D ( regionName, {height}, {color} )
 //	private
 //		#parseXML( xml )
 
@@ -167,6 +169,26 @@ export class Map
  
  
 	
+	region3D( regionName, height = 1, color = 'white' )
+	{
+		var geometry = this.geometry3D( regionName ),
+			material = new THREE.MeshStandardMaterial( {
+								color: color,
+								roughness: 1,
+								metalness: 0,
+							} ),
+			region = new THREE.Mesh( geometry, material );
+			
+		region.scale.y = height||0.001;
+		region.castShadow = true;
+		region.receiveShadow = true;
+		
+		return region;
+		
+	} // Map.region3D
+
+
+
 	geometry2D( regionName )
 	{
 		
@@ -179,6 +201,23 @@ export class Map
 		return geometry;
 		
 	} // Map.geometry2D
+	
+	
+	
+	region2D( regionName, height = 1, color = 'black' )
+	{
+		var geometry = this.geometry2D( regionName ),
+			material = new THREE.LineBasicMaterial( {color: color} ),
+			region = new THREE.Line( geometry, material );
+			
+		region.scale.y = height||0.001;
+		region.castShadow = true;
+		region.receiveShadow = true;
+		
+		return region;
+		
+	} // Map.region2D
+ 
 	
 } // Map
  

@@ -27,17 +27,9 @@
 
 		function drawMap( map )
 		{
-			var geometry, material, region, regionName;
-			
-			for( regionName in map.regions ) if( regionName != 'BG' )
-			{
-				geometry = map.geometry2D( regionName );
-				material = new THREE.LineBasicMaterial( {color: 'black'} );
-				
-				region = new THREE.Line( geometry, material );
-					
-				scene.add( region );
-			}
+			for( var regionName in map.regions )
+				if( regionName != 'BG' )
+					scene.add( map.region2D( regionName ) );
 		}		 
 		 
 	</script>

@@ -5,6 +5,34 @@ Low-poly map of regions.
 outlines and flat 3D shapes of map regions. The
 current map dataset is of Bulgaria and its provinces.
 
+The library is implemented as a single `map.js` file.
+
+
+
+## Quick reference
+
+```javascript
+new Map( xmlFilename, drawMap );
+new Map( xmlFilename, drawMap, options );
+
+map.regions → [string, string, ...]
+
+map.region2D( regionName ) → THREE.Line
+map.region2D( regionName, height ) → THREE.Line
+map.region2D( regionName, height, color ) → THREE.Line
+
+map.region3D( regionName ) → THREE.Mesh
+map.region3D( regionName, height ) → THREE.Mesh
+map.region3D( regionName, height, color ) → THREE.Mesh
+
+map.geometry2D( regionName ) → THREE.BufferGeometry
+map.geometry3D( regionName ) → THREE.BufferGeometry
+```
+
+
+
+
+
 ## API
 
 The library is implemented as a single `map.js` file.
@@ -34,7 +62,25 @@ structure `{width: 45, height: 28, roundness: 25}`. The `width` and `height` att
 </p>
 
 The callback function `drawMap` has one parameter &ndash; an instance
-of the map. This function is the place where all the fun happens. 
+of the map. This function is the place where all the fun happens. A typical
+pattern of using `drawMap` is:
+
+```javascript
+new Map( '../map.xml', drawMap );
+
+function drawMap( map )
+{
+  scene.add( map.region2D( 'BG' ) );
+}
+```
+
+and using the `=>` syntax it becomes shorter:
+
+```javascript
+new Map( '../map.xml',
+          map => scene.add( map.region2D( 'BG' ) )
+       );
+```
 
 
 ### Regions' names
@@ -47,13 +93,36 @@ The instance has property `regions` which is an array of the names
 of all regions. These names are extracted from the XML files. The 
 property is used to traverse through all regions in the map.
 
+```javascript
+// processing all regions
+for( regionName in map.regions )
+{
+  :
+}
+```
+
 Note, that the map of Buigaria is defined as a region, i.e. the same
 way as Bulgarian provinces. The way to distinguish the country region
 from the provinces regions is by name. The country region in file
 `map.xml` is `'BG'`.
 
+```javascript
+// processing all provinces
+for( regionName in map.regions ) if( regionName != 'BG' )
+{
+  :	
+}
+```
 
 ### Region outline
+
+```javascript
+map.region2D( regionName, height, color )
+```
+
+The method `region2D` generates the outline of
+the region called `regionName` as a `THREE.Line` object. Both
+`height` and `color` are optional and by default are `1` and `'black'`.
 
 ```javascript
 geometry = map.geometry2D( regionName )
@@ -61,21 +130,27 @@ geometry = map.geometry2D( regionName )
 
 The method `geometry2D` generates the outline of
 the region called `regionName` as a `THREE.BufferGeometry`
-suitable for creating `THREE.Line` lines. The horizontal size
-of the region is scaled and positioned consistently with the
-whole country. The line is translated vertically by 1.
+suitable for creating `THREE.Line` lines. This method is used by
+`region2D`.
 
 ### Region 3D shape
 
 ```javascript
-geometry = map.geometry3D( regionName )
+map.region3D( regionName, height, color )
+```
+
+The method `region2D` generates the 3D shape of
+the region called `regionName` as a `THREE.Mesh` object. Both
+`height` and `color` are optional and by default are `1` and `'white'`.
+
+```javascript
+geometry = map.geometry2D( regionName )
 ```
 
 The method `geometry3D` generates the 3D shape of
-the region called `regionName` as a `THREE.BufferGeometry` for 
-creating `THREE.Mesh` object. The horizontal size is scaled
-and positioned as the outline, the vertically the shape
-spans from 0 to 1.
+the region called `regionName` as a `THREE.BufferGeometry`
+suitable for creating `THREE.Mesh` objects. This method is used by
+`region3D`.
 
 That's all.
 
