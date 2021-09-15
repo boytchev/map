@@ -8,7 +8,7 @@ current map dataset is of Bulgaria and its provinces.
 The library is implemented as a single `map.js` file.
 
 
-##Table of contents
+## Table of contents
    * [Quick reference](#quick-reference)
    * [API](#api)
       * [Constructor](#constructor)
