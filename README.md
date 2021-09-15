@@ -50,7 +50,7 @@ for( regionName in map.regions ) if( regionName != 'BG' )
 }
 ```
 
-[<img src="snapshots/example-2.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-2.html)
+[<img src="examples/example-2.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-2.html)
 
 
 
@@ -77,7 +77,7 @@ for( regionName in map.regions ) if( regionName != 'BG' )
 }
 ```
 
-[<img src="snapshots/example-3.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-3.html)
+[<img src="examples/example-3.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-3.html)
 
 
 ### 4. Provinces in random colors
@@ -85,7 +85,7 @@ for( regionName in map.regions ) if( regionName != 'BG' )
 The material of each province can be set to a different
 color. Regions are extracted by `mapGeometry3D`.
 
-[<img src="snapshots/example-4.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-4.html)
+[<img src="examples/example-4.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-4.html)
 
 
 ### 5. Elevated provinces
@@ -93,7 +93,7 @@ color. Regions are extracted by `mapGeometry3D`.
 The constructed 3D object can be manipulated as any THREE.Object3D. The initial height of provinces is 1
 and this can be changed by the scaling in `scale.y`.
 
-[<img src="snapshots/example-5.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-5.html)
+[<img src="examples/example-5.jpg" width="300">](https://boytchev.github.io/bgmap/examples/example-5.html)
 
 
 September, 2021
