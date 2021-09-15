@@ -29,7 +29,7 @@
 		{
 			var geometry, material, region, regionName;
 			
-			for( var regionName in map.regions ) if( regionName != 'BG' )
+			for( regionName in map.regions ) if( regionName != 'BG' )
 			{
 				geometry = map.mapGeometry2D( regionName );
 				material = new THREE.LineBasicMaterial( {color: 'black'} );

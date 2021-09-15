@@ -1,11 +1,13 @@
 ﻿<!DOCTYPE html>
 
+<!-- bgmap.js: map of Bulgaria with provinces -->
+
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<script src="./js/three.min.js"></script>
-	<script src="./js/OrbitControls.js"></script>
-	<link rel="stylesheet" href="./css/bgmap.css">
+	<script src="js/three.min.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="example.css">
 </head>
 
 <body>
@@ -16,16 +18,18 @@
 
 	
 	<script type="module">
-		import {scene} from './init.js';
-		import {Map} from './map.js';
+	
+		import {Map} from '../map.js';
+		import {scene} from './example.js';
 
-		var map = new Map( 'bgmap-level-0.xml', createMap );
 
-		function createMap( map )
+		new Map( '../bgmap-level-0.xml', drawMap );
+
+		function drawMap( map )
 		{
-			var geometry, material, region;
+			var geometry, material, region, regionName;
 			
-			// country 
+			// draw Bulgaria as 3D plate
 			geometry = map.mapGeometry3D( 'BG' );
 			material = new THREE.MeshStandardMaterial( {
 							color: 'crimson',
@@ -38,12 +42,12 @@
 
 			scene.add( region );
 	
-			// provinces outlines
-			material = new THREE.LineBasicMaterial( {color: 'black'} );
-
-			for( var name in map.regions ) if( name!='BG' )
+			// draw provinces outlines
+			for( regionName in map.regions ) if( regionName!='BG' )
 			{
-				geometry = map.mapGeometry2D( name ),
+				geometry = map.mapGeometry2D( regionName );
+				material = new THREE.LineBasicMaterial( {color: 'black'} );
+				
 				region = new THREE.Line( geometry, material );
 					
 				scene.add( region );
