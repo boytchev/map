@@ -23,13 +23,13 @@
 		import {scene} from './example.js';
 
 
-		new Map( '../bgmap-level-0.xml', drawMap, {roundness: 100} );
+		new Map( '../map.xml', drawMap, {roundness: 100} );
 
 		function drawMap( map )
 		{
 			var geometry, material, region;
 			
-			geometry = map.mapGeometry2D( 'BG' );
+			geometry = map.geometry2D( 'BG' );
 			material = new THREE.LineBasicMaterial( {color: 'black'} );
 
 			region = new THREE.Line( geometry, material );

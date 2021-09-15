@@ -23,7 +23,7 @@
 		import {scene} from './example.js';
 
 
-		new Map( '../bgmap-level-0.xml', drawMap );
+		new Map( '../map.xml', drawMap );
 
 		function drawMap( map )
 		{
@@ -31,7 +31,7 @@
 			
 			for( regionName in map.regions ) if( regionName != 'BG' )
 			{
-				geometry = map.mapGeometry2D( regionName );
+				geometry = map.geometry2D( regionName );
 				material = new THREE.LineBasicMaterial( {color: 'black'} );
 				
 				region = new THREE.Line( geometry, material );

@@ -23,14 +23,14 @@
 		import {scene} from './example.js';
 
 
-		new Map( '../bgmap-level-0.xml', drawMap );
+		new Map( '../map.xml', drawMap );
 
 		function drawMap( map )
 		{
 			var geometry, material, region, regionName;
 			
 			// draw Bulgaria as 3D plate
-			geometry = map.mapGeometry3D( 'BG' );
+			geometry = map.geometry3D( 'BG' );
 			material = new THREE.MeshStandardMaterial( {
 							color: 'crimson',
 							roughness: 1,
@@ -45,7 +45,7 @@
 			// draw provinces outlines
 			for( regionName in map.regions ) if( regionName!='BG' )
 			{
-				geometry = map.mapGeometry2D( regionName );
+				geometry = map.geometry2D( regionName );
 				material = new THREE.LineBasicMaterial( {color: 'black'} );
 				
 				region = new THREE.Line( geometry, material );

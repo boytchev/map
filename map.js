@@ -3,15 +3,15 @@
 //
 // class Map
 //		constructor( xmlFilename, onLoad, options )
-//		mapGeometry3D( regionName ) - THREE.BufferGeometry for THREE.Mesh
-//		mapGeometry2D( regionName ) - THREE.BufferGeometry for THREE.Line
+//		geometry3D( regionName ) - THREE.BufferGeometry for THREE.Mesh
+//		geometry2D( regionName ) - THREE.BufferGeometry for THREE.Line
 //	private
 //		#parseXML( xml )
 
 
 
 // load astnchonously XML file with map data
-export class BGMap
+export class Map
 {
 	
 	constructor( xmlFilename, onLoad, options )
@@ -147,11 +147,11 @@ export class BGMap
 
 		if( this.onLoad ) this.onLoad( this );
 		
-	} // BGMap.parseXML
+	} // Map.parseXML
  
 
 	
-	mapGeometry3D( regionName )
+	geometry3D( regionName )
 	{
 
 		var shape = this.regions[regionName],
@@ -163,11 +163,11 @@ export class BGMap
 				
 		return geometry;
 		
-	} // BGMap.mapGeometry3D
+	} // Map.geometry3D
  
  
 	
-	mapGeometry2D( regionName )
+	geometry2D( regionName )
 	{
 		
 		var shape = this.regions[regionName],
@@ -178,9 +178,9 @@ export class BGMap
 				
 		return geometry;
 		
-	} // BGMap.mapGeometry2D
+	} // Map.geometry2D
 	
-} // BGMap
+} // Map
  
 
 

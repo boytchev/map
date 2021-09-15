@@ -23,7 +23,7 @@
 		import {scene} from './example.js';
 
 
-		new Map( '../bgmap-level-0.xml', drawMap );
+		new Map( '../map.xml', drawMap );
 
 		function drawMap( map )
 		{
@@ -32,7 +32,7 @@
 			for( regionName in map.regions ) if( regionName!='BG' )
 			{
 				// province in color
-				geometry = map.mapGeometry3D( regionName );
+				geometry = map.geometry3D( regionName );
 				color = new THREE.Color( Math.random(), Math.random(), Math.random() );
 				material = new THREE.MeshStandardMaterial( {
 								color: color,
@@ -46,7 +46,7 @@
 				scene.add( region );
 
 				// province outline
-				geometry = map.mapGeometry2D( regionName ),
+				geometry = map.geometry2D( regionName ),
 				material = new THREE.LineBasicMaterial( {color: 'black'} );
 				
 				region = new THREE.Line( geometry, material );
