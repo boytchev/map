@@ -23,10 +23,11 @@ outlines and 3D shapes of regions. Because the XML processing is
 asynchronous, the instance can be used only after the callback
 function is actually called.
 * `options` is an optional parameter for the map generator with
-structure `{width: 45, height: 28, roundness: 25}`. The `width` and `height` attributes define the size of the map. If these values are not provided, `Map` uses global variables `MAP_WIDTH` and `MAP_HEIGHT`. If they are not defined, `Map` assumes the width is 45 and the height is 28. The attribute `roundness` sets the rounding radius of some vertices in the map. The default value is 25. The following two illustration show sharp outline (roundness=0) and smooth outline (roundness=100):
+structure `{width: 45, height: 28, roundness: 25}`. The `width` and `height` attributes define the size of the map. If these values are not provided, `Map` uses global variables `MAP_WIDTH` and `MAP_HEIGHT`. If they are not defined, `Map` assumes the width is 45 and the height is 28. The attribute `roundness` sets the rounding radius of some vertices in the map. The default value is 25. The following two illustration show sharp outline ([roundness=0](https://boytchev.github.io/bgmap/examples/example-1-sharp.html)) and smooth outline ([roundness=100](https://boytchev.github.io/bgmap/examples/example-1-smooth.html)):
 
 <p align="center">
-	[<img src="examples/example-1-sharp.jpg" width="150">](https://boytchev.github.io/bgmap/examples/example-1-sharp.html) [<img src="examples/example-1-smooth.jpg" width="150">](https://boytchev.github.io/bgmap/examples/example-1-smooth.html)
+	<img src="examples/example-1-sharp.jpg" width="200">
+	<img src="examples/example-1-smooth.jpg" width="200">
 </p>
 
 The callback function `drawMap` has one parameter &ndash; an instance
