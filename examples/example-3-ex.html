@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html>
 
-<!-- map.js: mid-poly map -->
+<!-- bgmap.js: map of Bulgaria with provinces -->
 
 <html>
 <head>
@@ -15,6 +15,7 @@
 		const MAP_WIDTH = 45;
 		const MAP_HEIGHT = 28;
 	</script>
+
 	
 	<script type="module">
 	
@@ -22,27 +23,19 @@
 		import {scene} from './example.js';
 
 
-		new Map( 'test.xml', drawMap );
+		new Map( '../map-ex.xml', drawMap );
 
 		function drawMap( map )
 		{
+			// draw Bulgaria as 3D plate
+			scene.add( map.region3D( 'BG', 1, 'crimson' ) );
+	
+			// draw provinces outlines
 			for( var regionName in map.regions )
-				if( regionName != 'BG' )
-				{
-				
-					if( Math.random() < 0.5 )
-					{
-						scene.add( map.region3D( regionName, 2, 'cornflowerblue' ) );
-						scene.add( map.region2D( regionName, 2 ) );
-					}
-					else
-					{
-						scene.add( map.region3D( regionName, 1, 'crimson' ) );
-						scene.add( map.region2D( regionName ) );
-					}
-						
-				}
-		}		 
+				if( regionName!='BG' )
+					scene.add( map.region2D( regionName ) );
+		}
+		 
 		 
 	</script>
 </body>

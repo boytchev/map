@@ -54,7 +54,7 @@ new Map( xmlFilename, drawMap, options )
 
 * `xmlFilename` is a name of an XML file defining the
 regions in Bulgaria. The library provides low-poly definitions
-of regions in Bulgaria in file `map.xml`)
+of regions in Bulgaria in file `map.xml` and an extended definition in `map-ex.xml`.
 * `drawMap` is a user-defined callback function, that receives the map instance as parameter. This instance is used to extract
 outlines and 3D shapes of regions. Because the XML processing is
 asynchronous, the instance can be used only after the callback
@@ -247,6 +247,10 @@ function drawMap( map )
 ```
 
 [<img src="examples/example-3.jpg" width="300">](https://boytchev.github.io/map/examples/example-3.html)
+
+The same example using the extended map `map-ex.xml` instead of  `map.xml`.
+
+[<img src="examples/example-3-ex.jpg" width="300">](https://boytchev.github.io/map/examples/example-3-ex.html)
 
 
 #### Colored provinces
