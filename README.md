@@ -24,9 +24,13 @@ The example extracts the outline of Bulgaria with
 `mapGeometry2D` and region name set to `'BG'`.
 
 ```javascript
+// get the geometry of the outline
 geometry = map.mapGeometry2D( 'BG' );
+
+// set any custom material for lines
 material = new THREE.LineBasicMaterial(...);
 
+// construct line as 3D object
 region = new THREE.Line( geometry, material );
 ```
 
