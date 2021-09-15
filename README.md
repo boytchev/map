@@ -12,21 +12,15 @@ The library is implemented as a single `map.js` file.
 ## Quick reference
 
 ```javascript
-new Map( xmlFilename, drawMap );
 new Map( xmlFilename, drawMap, options );
 
-map.regions → [string, string, ...]
+map.regions // [string, string, ...]
 
-map.region2D( regionName ) → THREE.Line
-map.region2D( regionName, height ) → THREE.Line
-map.region2D( regionName, height, color ) → THREE.Line
+map.region2D( regionName, height, color ) // THREE.Line
+map.region3D( regionName, height, color ) // THREE.Mesh
 
-map.region3D( regionName ) → THREE.Mesh
-map.region3D( regionName, height ) → THREE.Mesh
-map.region3D( regionName, height, color ) → THREE.Mesh
-
-map.geometry2D( regionName ) → THREE.BufferGeometry
-map.geometry3D( regionName ) → THREE.BufferGeometry
+map.geometry2D( regionName ) // THREE.BufferGeometry
+map.geometry3D( regionName ) // THREE.BufferGeometry
 ```
 
 
