@@ -8,8 +8,27 @@ current map dataset is of Bulgaria and its provinces.
 The library is implemented as a single `map.js` file.
 
 
+Table of contents
+==================
+<!--ts-->
+   * [Quick reference](#quick-reference)
+   * [API](#api)
+      * [Constructor](#constructor)
+      * [Region name](#region-name)
+      * [Region outline](#region-outline)
+      * [Region 3D shape](#region-3d-shape)
+   * [XML Data](#cml-data)
+   * [Examples](#examples)
+     * [Outline of country](#outline-of-country)
+     * [Outlines of provinces](#outlines-of-provinces)
+     * [Country and provinces](#country-and-provinces)
+     * [Colored provinces](#colored-provinces)
+     * [Elevated provinces](#elevated-provinces)
+<!--te-->
+
 
 ## Quick reference
+==================
 
 ```javascript
 new Map( xmlFilename, drawMap, options );
@@ -24,10 +43,8 @@ map.geometry3D( regionName ) // THREE.BufferGeometry
 ```
 
 
-
-
-
 ## API
+======
 
 The library is implemented as a single `map.js` file.
 
@@ -77,7 +94,7 @@ new Map( '../map.xml',
 ```
 
 
-### Regions' names
+### Region name
 
 ```javascript
 map.regions
@@ -151,9 +168,10 @@ That's all.
 
 
 ## XML Data
+===========
 
 The XML file is exported from file `map.drawio` which can be
-be edited in (Diagrams.net)[https://www.diagrams.net/] (previously known as Draw.io).
+be edited in [Diagrams.net](https://www.diagrams.net/) (previously known as Draw.io).
 The `Map` constructor has minimal parser of XML files, i.e. its
 looks only for specific nodes, ignoring all the rest. The structure
 of the XMl file must be like this:
@@ -182,13 +200,14 @@ and a list of next consequitive points `<mxPoint>` from `<Array>`.
 
 
 ## Examples
+===========
 
 The following examples show code sniplets. Click on the image 
 to run the example in real-rime in your browser. Use your
 default pointing device to change the viewpoint.
 
 
-### 1. Outline of Bulgaria
+### 1. Outline of country
 
 ```javascript
 new Map( '../map.xml', drawMap );
@@ -202,7 +221,7 @@ function drawMap( map )
 [<img src="examples/example-1.jpg" width="300">](https://boytchev.github.io/map/examples/example-1.html)
 
 
-### 2. Outlines of Bulgarian provinces
+### 2. Outlines of provinces
 
 ```javascript
 new Map( '../map.xml', drawMap );
@@ -219,7 +238,7 @@ function drawMap( map )
 
 
 
-### 3. Bulgaria with provinces
+### 3. Country and provinces
 
 ```javascript
 new Map( '../map.xml', drawMap );
@@ -237,7 +256,7 @@ function drawMap( map )
 [<img src="examples/example-3.jpg" width="300">](https://boytchev.github.io/map/examples/example-3.html)
 
 
-### 4. Provinces in random colors
+### 4. COlored provinces
 
 ```javascript
 new Map( '../map.xml', drawMap );
