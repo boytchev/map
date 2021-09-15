@@ -6,7 +6,7 @@ outlines or 3D shapes of Bulgaria and its provinces.
 It can be used for demonstrating geographical
 interactive images.
 
-## Using
+## API
 
 The library is implemented as a single `maps.js` file.
 It is initialized by generating an instance of the class `Map`.
@@ -18,28 +18,45 @@ new Map( xmlFilename, drawMap, options );
 * `xmlFilename` is a name of an XML file defining the
 regions in Bulgaria. The library provides low-poly definitions
 of regions in Bulgaria in file `bgmap-level-0.xml`)
-
 * `drawMap` is a user-defined callback function, that receives the map instance as parameter. This instance is used to extract
 outlines and 3D shapes of regions. Because the XML processing is
 asynchronous, the instance can be used only after the callback
 function is actually called.
-
 * `options` is an optional parameter for the map generator with
-structure `{width: ..., height: ..., roundness: ...}`. The `width` and `height` attributes define the size of the map. If these values are not provided, `Map` uses global variables `MAP_WIDTH` and `MAP_HEIGHT`. If they are not defined, `Map` assumes the width is 45 and the height is 28. The attribute `roundness` sets the rounding radius of some vertices in the map. The default value is 25. The following two illustration show sharp outline (roundness=0) and smooth outline (roundness=100):
+structure `{width: 45, height: 28, roundness: 25}`. The `width` and `height` attributes define the size of the map. If these values are not provided, `Map` uses global variables `MAP_WIDTH` and `MAP_HEIGHT`. If they are not defined, `Map` assumes the width is 45 and the height is 28. The attribute `roundness` sets the rounding radius of some vertices in the map. The default value is 25. The following two illustration show sharp outline (roundness=0) and smooth outline (roundness=100):
 
 [<img src="examples/example-1-sharp.jpg" width="150">](https://boytchev.github.io/bgmap/examples/example-1-sharp.html) [<img src="examples/example-1-smooth.jpg" width="150">](https://boytchev.github.io/bgmap/examples/example-1-smooth.html)
 
 
+The callback function `drawMap` has one parameter &ndash; an instance
+of the map. This function is the place where all the fun happens. 
 
 
-## API
+### Properties
 
-The call-back function has one parameter &ndash; an instance
-of the map. It has:
+The instance has property `regions` which is an array of the names
+of all regions. These names are extracted from the XML files. The 
+property is used to traverse through all regions in the map.
 
-* `regions` &ndash; an array of the names of all regions
-* `mapGeometry2D( regionName )` &ndash; a method that generates the outline of a region as `THREE.BufferGeometry` for `THREE.Line`
-* `mapGeometry3D( regionName )` &ndash; a method that generates the 3D shape of a region as `THREE.BufferGeometry` for `THREE.Mesh`
+Note, that the map of Buigaria is defined as a region, i.e. the same
+way as Bulgarian provinces. The way to distinguish the country region
+from the provinces regions is by name. The country region in file
+`bgmap-level-0.xml` is `'BG'`.
+
+
+### Methods
+
+Method `mapGeometry2D( regionName )` generates the outline of
+a region (given its name) as a `THREE.BufferGeometry`
+suitable for creating `THREE.Line` lines. The horizontal size
+of the region is scaled and positioned consistently with the
+whole country. The line is translated vertically by 1.
+
+Method `mapGeometry3D( regionName )` generates the 3D shape of
+a region (given its name) as a `THREE.BufferGeometry` for 
+creating `THREE.Mesh` object. The horizontal size is scaled
+and positioned as the outline, the vertically the shape
+spans from 0 to 1.
 
 That's all.
 
