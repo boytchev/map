@@ -1,15 +1,44 @@
 # bgmap
 Low-poly map of provinces in Bulgaria.
 
-The file `maps.js` defines
-the class `Map` that returns a province or the whole country either
-as a 3D mesh (i.e. `THREE.BufferGeometry` for `THREE.Mesh`) or
-a 2D contour (also `THREE.BufferGeometry` but `for THREE.Line`).
+`maps.js` is a minimialistic library for generating
+outlines or 3D shapes of Bulgaria and its provinces.
 
-It is possible to apply rounding of borders.
 
-The shapes of provinces are manually crafted in diagrams.net, exported
-to XML and imported to `maps.js`.
+## Using
+
+The library is implemented as a single `maps.js` file.
+It is initialized by generating an instance of the class `Map`.
+The first parameter is the name of an XML file defining
+the regions.
+
+```javascript
+new Map( '../bgmap-level-0.xml', drawMap );
+```
+
+The instance reads and processes this file asynchronously. When completed, it calls the provided
+in the second parameter call-back function. This functionis
+where the maps is constructed as 3D object.
+
+```javascript
+function drawMap( map )
+{
+  :
+}  
+```
+
+
+## API
+
+The call-back function has one parameter &ndash; an instance
+of the map. It has:
+
+* `regions` &ndash; an array of the names of all regions
+* `mapGeometry2D( regionName )` &ndash; a method that generates the outline of a region as `THREE.BufferGeometry` for `THREE.Line`
+* `mapGeometry3D( regionName )` &ndash; a method that generates the 3D shape of a region as `THREE.BufferGeometry` for `THREE.Mesh`
+
+That's all.
+
 
 ## Examples
 
