@@ -19,13 +19,13 @@
 	
 	<script type="module">
 	
-		import {Map} from '../map.js';
+		import {BGMap} from '../map.js';
 		import {scene} from './example.js';
 
 
-		new Map( '../bgmap-level-0.xml', drawMap );
+		new BGMap( '../bgmap-level-0.xml', drawBGMap );
 
-		function drawMap( map )
+		function drawMap( bgmap )
 		{
 			var geometry, color, material, region, regionName;
 				

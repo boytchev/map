@@ -11,7 +11,7 @@
 
 
 // load astnchonously XML file with map data
-export class Map
+export class BGMap
 {
 	
 	constructor( xmlFilename, onLoad, options )
@@ -34,7 +34,7 @@ export class Map
 		  .then( response => response.text() )
 		  .then( text => that.#parseXML( new DOMParser().parseFromString(text,"text/xml") ) );
 
-	} // Map
+	} // BGMap
  
  
 	// parses XML DOM into object with elements province names and values THREE.Shape
@@ -147,7 +147,7 @@ export class Map
 
 		if( this.onLoad ) this.onLoad( this );
 		
-	} // Map.parseXML
+	} // BGMap.parseXML
  
 
 	
@@ -163,7 +163,7 @@ export class Map
 				
 		return geometry;
 		
-	} // Map.mapGeometry3D
+	} // BGMap.mapGeometry3D
  
  
 	
@@ -178,9 +178,9 @@ export class Map
 				
 		return geometry;
 		
-	} // Map.mapGeometry2D
+	} // BGMap.mapGeometry2D
 	
-} // Map
+} // BGMap
  
 
 

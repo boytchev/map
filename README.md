@@ -10,6 +10,8 @@ interactive images.
 
 The library is implemented as a single `maps.js` file.
 It is initialized by generating an instance of the class `Map`.
+This instance is used to get a list of regions' names, the outline
+and the 3D shape of each region.
 
 ```javascript
 new Map( xmlFilename, drawMap, options );
@@ -63,7 +65,9 @@ spans from 0 to 1.
 That's all.
 
 
-## Data
+## XML Data
+
+
 
 
 ## Examples
