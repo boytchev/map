@@ -1,11 +1,11 @@
 # bgmap
 Low-poly map of provinces in Bulgaria.
 
-[<img src="snapshots/example-1.jpg" width="75">](https://boytchev.github.io/bgmap/example-1.html)
-[<img src="snapshots/example-2.jpg" width="75">](https://boytchev.github.io/bgmap/example-2.html)
-[<img src="snapshots/example-3.jpg" width="75">](https://boytchev.github.io/bgmap/example-3.html)
-[<img src="snapshots/example-4.jpg" width="75">](https://boytchev.github.io/bgmap/example-4.html)
-[<img src="snapshots/example-5.jpg" width="75">](https://boytchev.github.io/bgmap/example-5.html)
+[<img src="examples/example-1.jpg" width="75">](https://boytchev.github.io/bgmap/examples/example-1.html)
+[<img src="examples/example-2.jpg" width="75">](https://boytchev.github.io/bgmap/examples/example-2.html)
+[<img src="examples/example-3.jpg" width="75">](https://boytchev.github.io/bgmap/examples/example-3.html)
+[<img src="examples/example-4.jpg" width="75">](https://boytchev.github.io/bgmap/examples/example-4.html)
+[<img src="examples/example-5.jpg" width="75">](https://boytchev.github.io/bgmap/examples/example-5.html)
 
 The file `maps.js` defines
 the class `Map` that returns a province or the whole country either
@@ -20,14 +20,14 @@ to XML and imported to `maps.js`.
 ## Examples
 
 The following examples show code sniplets. Click on the image 
-to run the example in real-rime in your browser. Use the mouse
-or finger (for touch screens) to control the viewpoint.
+to run the example in real-rime in your browser. Use your
+default pointing device to change the viewpoint.
 
 
 ### 1. Outline of Bulgaria
 
-The geometry for the outline of Bulgaria is retrieved by
-the method `mapGeometry2D` with parameter `'BG'`.
+The example extracts the outline of Bulgaria with
+`mapGeometry2D` and region name set to `'BG'`.
 
 ```javascript
 geometry = map.mapGeometry2D( 'BG' );
@@ -36,20 +36,19 @@ material = new THREE.LineBasicMaterial(...);
 region = new THREE.Line( geometry, material );
 ```
 
-[<img src="snapshots/example-1.jpg">](https://boytchev.github.io/bgmap/example-1.html)
+[<img src="examples/example-1.jpg">](https://boytchev.github.io/bgmap/examples/example-1.html)
 
 
 ### 2. Outlines of Bulgarian provinces
 
-The geometries for the outlines of provinces in Bulgaria are
-retrieved one by one by the method `mapGeometry2D` with
-province's name as parameter. The list of regions in the map
-(all provinces and the country itself) is stored in `regions`.
+The example uses the list of all regions from `regions`
+and extract the outline of all regions, that are not
+called `'BG'`.
 
 ```javascript
-for( name in map.regions ) if( name!='BG' )
+for( regionName in map.regions )
 {
-  geometry = map.mapGeometry2D( name );
+  geometry = map.mapGeometry2D( regionName );
   material = new THREE.LineBasicMaterial(...);
 	
   region = new THREE.Line( geometry, material );
@@ -57,7 +56,7 @@ for( name in map.regions ) if( name!='BG' )
 }
 ```
 
-[<img src="snapshots/example-2.jpg">](https://boytchev.github.io/bgmap/example-2.html)
+[<img src="snapshots/example-2.jpg">](https://boytchev.github.io/bgmap/examples/example-2.html)
 
 
 September, 2021

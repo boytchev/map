@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+
+<!-- bgmap.js: country outline -->
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<script src="js/three.min.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="example.css">
+</head>
+
+<body>
+	<script>
+		const MAP_WIDTH = 45;
+		const MAP_HEIGHT = 28;
+	</script>
+	
+	
+	<script type="module">
+	
+		import {Map} from '../map.js';
+		import {scene} from './example.js';
+
+
+		new Map( '../bgmap-level-0.xml', drawMap );
+
+		function drawMap( map )
+		{
+			var geometry, material, region;
+			
+			geometry = map.mapGeometry2D( 'BG' );
+			material = new THREE.LineBasicMaterial( {color: 'black'} );
+
+			region = new THREE.Line( geometry, material );
+
+			scene.add( region );
+		}
+		 
+	</script>
+</body>
+</html>
+
+

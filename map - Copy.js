@@ -1,13 +1,14 @@
 ﻿
-// bgmap.js
+// standalone library
 //
 // class Map
-//		constructor( xmlFilename, onLoad, options )
+//		constructor( xmlFilename, onLoad(regions), options{roundness,width:height} )
 //		mapGeometry3D( regionName ) - THREE.BufferGeometry for THREE.Mesh
 //		mapGeometry2D( regionName ) - THREE.BufferGeometry for THREE.Line
 //	private
-//		#parseXML( xml )
+//		parseXML( xml )
 
+//import {BufferGeometryUtils} from './js/BufferGeometryUtils.js';
 
 
 // load astnchonously XML file with map data
@@ -21,6 +22,22 @@ export class Map
 		this.regions = {}; // THREE.Shape objects
 		this.onLoad = onLoad; // called when the map regions are created
 		this.context = null;
+
+//		this.img = new Image();
+//		this.img.onload = function()
+//		{
+//			var canvas = document.createElement( 'canvas' );
+//			canvas.width = that.img.width;
+//			canvas.height = that.img.height;
+			
+//			that.context = canvas.getContext( '2d' );
+//			that.context.drawImage( that.img, 0, 0 );
+	
+//		}
+
+//		this.img.src = './diagrams/heightmap-blur.jpg';
+//		img.src = './diagrams/heightmap - Copy.jpg';
+
   
 		this.scale = 1;
 		this.center = {x:0, z:0};
@@ -37,6 +54,7 @@ export class Map
 	} // Map
  
  
+	// parses XML DOM into object with elements province names and values THREE.Shape
 	// parses XML DOM into object with elements province names and values THREE.Shape
 	#parseXML( xml )
 	{
@@ -149,27 +167,92 @@ export class Map
 		
 	} // Map.parseXML
  
+	/*
+	heightmapGeometry3D( )
+	{
+		var geometry = new THREE.BoxGeometry( this.options.width, 1, this.options.height, 25, 1, 15 )
+		
+		//geometry.computeVertexNormals();
 
+		var pos = geometry.getAttribute( 'position' );
+		var nor = geometry.getAttribute( 'normal' );
+		for( var i=0; i<pos.count; i++ )
+if( pos.getY(i)>0.45 )
+			{
+				var x = pos.getX( i ),
+					z = pos.getZ( i );
+					
+				var xx = Math.round((this.img.width-1)*(x+this.options.width/2)/this.options.width);
+				var yy = Math.round((this.img.height-1)*(z+this.options.height/2)/this.options.height);
+				
+				var pixel = this.context.getImageData( xx, yy, 1, 1 ).data[0];
+		
+				var y = pixel/200;
+				//y = Math.pow(y,1/2);
+				//y = 0.5-0.5*Math.cos(y*Math.PI);
+				pos.setY( i, y );
+			}
+	
+console.log(geometry.getAttribute( 'position' ).count);	
+		geometry = BufferGeometryUtils.mergeVertices( geometry, 0.1 );
+console.log(geometry.getAttribute( 'position' ).count);	
+
+		geometry.computeVertexNormals();
+		
+		return geometry;
+	}
+
+	tesselate( geometry )
+	{
+		var tess = new THREE.TessellateModifier( 1/4, 20 );
+		geometry = tess.modify( geometry );
+console.log(geometry.getAttribute( 'position' ).count);	
+		geometry = BufferGeometryUtils.mergeVertices( geometry, 0.3 );
+console.log(geometry.getAttribute( 'position' ).count);	
+		return geometry;
+	}
+	*/
 	
 	mapGeometry3D( regionName )
 	{
-
 		var shape = this.regions[regionName],
 			extrudeSettings = { depth: 1, bevelEnabled: false, steps: 1 },
 			geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings )
 				.rotateX( Math.PI/2 )
 				.scale( this.scale, 1, this.scale )
 				.translate( this.center.x, 1, this.center.z );
+/*
+		if( this.options.heightmap )
+		{
+			geometry = this.tesselate( geometry );
+		var pos = geometry.getAttribute( 'position' );
+		var nor = geometry.getAttribute( 'normal' );
+		for( var i=0; i<pos.count; i++ )
+if( pos.getY(i)>0.45 )
+			{
+				var x = pos.getX( i ),
+					z = pos.getZ( i );
+					
+				var xx = Math.round((this.img.width-1)*(x+this.options.width/2)/this.options.width);
+				var yy = Math.round((this.img.height-1)*(z+this.options.height/2)/this.options.height);
 				
-		return geometry;
+				var pixel = this.context.getImageData( xx, yy, 1, 1 ).data[0];
 		
+				var y = pixel/200;
+				
+				//y = Math.pow(y,1/2);
+				y = 0.5-0.5*Math.cos(y*Math.PI);
+				pos.setY( i, pos.getY(i)+3*y );
+			}
+		} 
+		geometry.computeVertexNormals();
+		*/
+		return geometry;
 	} // Map.mapGeometry3D
- 
  
 	
 	mapGeometry2D( regionName )
 	{
-		
 		var shape = this.regions[regionName],
 			geometry = new THREE.BufferGeometry().setFromPoints( shape.extractPoints(12).shape )
 				.rotateX( Math.PI/2 )
@@ -177,7 +260,6 @@ export class Map
 				.translate( this.center.x, 1.01, this.center.z );
 				
 		return geometry;
-		
 	} // Map.mapGeometry2D
 	
 } // Map
