@@ -8,6 +8,8 @@ current map dataset is of Bulgaria and its provinces.
 ## API
 
 The library is implemented as a single `map.js` file.
+
+### Constructor `Map`
 It is initialized by generating an instance of the class `Map`.
 This instance is used to get a list of regions' names, the outline
 and the 3D shape of each region.
@@ -35,7 +37,7 @@ The callback function `drawMap` has one parameter &ndash; an instance
 of the map. This function is the place where all the fun happens. 
 
 
-### Properties
+### Property `regions`
 
 The instance has property `regions` which is an array of the names
 of all regions. These names are extracted from the XML files. The 
@@ -47,13 +49,15 @@ from the provinces regions is by name. The country region in file
 `map.xml` is `'BG'`.
 
 
-### Methods
+### Method `geometry2D`
 
-Method `geometry2D( regionName )` generates the outline of
+The method `geometry2D( regionName )` generates the outline of
 a region (given its name) as a `THREE.BufferGeometry`
 suitable for creating `THREE.Line` lines. The horizontal size
 of the region is scaled and positioned consistently with the
 whole country. The line is translated vertically by 1.
+
+### Method `geometry3D`
 
 Method `geometry3D( regionName )` generates the 3D shape of
 a region (given its name) as a `THREE.BufferGeometry` for 
@@ -66,7 +70,33 @@ That's all.
 
 ## XML Data
 
+The XML file is exported from file `map.drawio` which can be
+be edited in (Diagrams.net)[https://www.diagrams.net/] (previously known as Draw.io).
+The `Map` constructor has minimal parser of XML files, i.e. its
+looks only for specific nodes, ignoring all the rest. The structure
+of the XMl file must be like this:
 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile ...>
+  :
+  <mxCell value="BG" ...>
+    :
+    <mxPoint x="370" y="-620" as="sourcePoint" />
+    <Array as="points">
+        <mxPoint x="540" y="-550" />
+        <mxPoint x="540" y="-510" />
+		:
+        <mxPoint x="220" y="-330" />
+    </Array>
+  </mxCell>
+  :
+</mxfile>
+```
+
+Each region is defined as `<mxCell>` and the name of the region is in attribute `value`.
+The geographical shape of the region is defined by a starting point `<mxPoint ... as="sourcePoint">`
+and a list of next consequitive points `<mxPoint>` from `<Array>`.
 
 
 ## Examples
