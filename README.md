@@ -9,7 +9,7 @@ The library is implemented as a single `map.js` file.
 
 
 Table of contents
-==================
+-----------------
 <!--ts-->
    * [Quick reference](#quick-reference)
    * [API](#api)
@@ -17,7 +17,7 @@ Table of contents
       * [Region name](#region-name)
       * [Region outline](#region-outline)
       * [Region 3D shape](#region-3d-shape)
-   * [XML Data](#cml-data)
+   * [XML Data](#xml-data)
    * [Examples](#examples)
      * [Outline of country](#outline-of-country)
      * [Outlines of provinces](#outlines-of-provinces)
