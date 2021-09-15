@@ -126,7 +126,7 @@ the region called `regionName` as a `THREE.Line` object. Both
 `height` and `color` are optional and by default are `1` and `'black'`.
 
 ```javascript
-geometry = map.geometry2D( regionName )
+map.geometry2D( regionName )
 ```
 
 The method `geometry2D` generates the outline of
@@ -145,7 +145,7 @@ the region called `regionName` as a `THREE.Mesh` object. Both
 `height` and `color` are optional and by default are `1` and `'white'`.
 
 ```javascript
-geometry = map.geometry2D( regionName )
+map.geometry2D( regionName )
 ```
 
 The method `geometry3D` generates the 3D shape of
