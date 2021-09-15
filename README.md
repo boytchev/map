@@ -3,29 +3,33 @@ Low-poly map of provinces in Bulgaria.
 
 `maps.js` is a minimialistic library for generating
 outlines or 3D shapes of Bulgaria and its provinces.
-
+It can be used for demonstrating geographical
+interactive images.
 
 ## Using
 
 The library is implemented as a single `maps.js` file.
 It is initialized by generating an instance of the class `Map`.
-The first parameter is the name of an XML file defining
-the regions.
 
 ```javascript
-new Map( '../bgmap-level-0.xml', drawMap );
+new Map( xmlFilename, drawMap, options );
 ```
 
-The instance reads and processes this file asynchronously. When completed, it calls the provided
-in the second parameter call-back function. This functionis
-where the maps is constructed as 3D object.
+* `xmlFilename` is a name of an XML file defining the
+regions in Bulgaria. The library provides low-poly definitions
+of regions in Bulgaria in file `bgmap-level-0.xml`)
 
-```javascript
-function drawMap( map )
-{
-  :
-}  
-```
+* `drawMap` is a user-defined callback function, that receives the map instance as parameter. This instance is used to extract
+outlines and 3D shapes of regions. Because the XML processing is
+asynchronous, the instance can be used only after the callback
+function is actually called.
+
+* `options` is an optional parameter for the map generator with
+structure `{width: ..., height: ..., roundness: ...}`. The `width` and `height` attributes define the size of the map. If these values are not provided, `Map` uses global variables `MAP_WIDTH` and `MAP_HEIGHT`. If they are not defined, `Map` assumes the width is 45 and the height is 28. The attribute `roundness` sets the rounding radius of some vertices in the map. The default value is 25. The following two illustration show sharp outline (roundness=0) and smooth outline (roundness=100):
+
+[<img src="examples/example-1-sharp.jpg" width="150">](https://boytchev.github.io/bgmap/examples/example-1-sharp.html) [<img src="examples/example-1-smooth.jpg" width="150">](https://boytchev.github.io/bgmap/examples/example-1-smooth.html)
+
+
 
 
 ## API
@@ -38,6 +42,9 @@ of the map. It has:
 * `mapGeometry3D( regionName )` &ndash; a method that generates the 3D shape of a region as `THREE.BufferGeometry` for `THREE.Mesh`
 
 That's all.
+
+
+## Data
 
 
 ## Examples
