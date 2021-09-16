@@ -27,6 +27,7 @@
 
 		function drawMap( map )
 		{
+
 			for( var regionName in map.regions )
 				if( regionName!='BG' )
 				{
@@ -36,6 +37,18 @@
 					
 					scene.add( map.region3D( regionName, height, color ) );
 					scene.add( map.region2D( regionName, height ) );
+					
+					var ball = new THREE.Mesh(
+							new THREE.IcosahedronGeometry( 1, 4 ),
+							new THREE.MeshStandardMaterial( {
+									color: 'dimgray',
+									roughness: 0,
+									metalness: 0.5
+							} )
+						);
+						
+					ball.position.copy( map.center( regionName, height ) );
+					scene.add( ball );
 				}
 		}
 		 

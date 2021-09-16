@@ -20,12 +20,13 @@ export class Map
 	{
 		var that = this;
 		
+		this.points = {}; // THREE.Vector2 objects
 		this.regions = {}; // THREE.Shape objects
 		this.onLoad = onLoad; // called when the map regions are created
 		this.context = null;
   
-		this.scale = 1;
-		this.center = {x:0, z:0};
+		this.mapScale = 1;
+		this.mapCenter = {x:0, z:0};
 		this.options = options || {};
 		
 		if( this.options.roundness === undefined ) this.options.roundness = 25;
@@ -43,7 +44,7 @@ export class Map
 	#parseXML( xml )
 	{
 		var minX = Infinity, maxX = -Infinity,
-			minY = Infinity,maxY = -Infinity;
+			minY = Infinity, maxY = -Infinity;
 		
 		var xmlElems = xml.getElementsByTagName( 'mxCell' );
 
@@ -141,11 +142,12 @@ export class Map
 			}			
 
 			this.regions[name] = shape;
+			this.points[name] = points;
 		}
 
-		this.scale = Math.min( this.options.width/(maxX-minX), this.options.height/(maxY-minY) );
-		this.center.x = -this.scale*(maxX+minX)/2;
-		this.center.z = -this.scale*(maxY+minY)/2;
+		this.mapScale = Math.min( this.options.width/(maxX-minX), this.options.height/(maxY-minY) );
+		this.mapCenter.x = -this.mapScale*(maxX+minX)/2;
+		this.mapCenter.z = -this.mapScale*(maxY+minY)/2;
 
 		if( this.onLoad ) this.onLoad( this );
 		
@@ -156,12 +158,15 @@ export class Map
 	geometry3D( regionName )
 	{
 
+		if( this.regions[regionName]===undefined )
+			throw `Unknown regions id '${regionName}'`;
+		
 		var shape = this.regions[regionName],
 			extrudeSettings = { depth: 1, bevelEnabled: false, steps: 1 },
 			geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings )
 				.rotateX( Math.PI/2 )
-				.scale( this.scale, 1, this.scale )
-				.translate( this.center.x, 1, this.center.z );
+				.scale( this.mapScale, 1, this.mapScale )
+				.translate( this.mapCenter.x, 1, this.mapCenter.z );
 				
 		return geometry;
 		
@@ -191,12 +196,15 @@ export class Map
 
 	geometry2D( regionName )
 	{
+
+		if( this.regions[regionName]===undefined )
+			throw `Unknown regions id '${regionName}'`;
 		
 		var shape = this.regions[regionName],
 			geometry = new THREE.BufferGeometry().setFromPoints( shape.extractPoints(12).shape )
 				.rotateX( Math.PI/2 )
-				.scale( this.scale, 1, this.scale )
-				.translate( this.center.x, 1.01, this.center.z );
+				.scale( this.mapScale, 1, this.mapScale )
+				.translate( this.mapCenter.x, 1.01, this.mapCenter.z );
 				
 		return geometry;
 		
@@ -218,6 +226,47 @@ export class Map
 		
 	} // Map.region2D
  
+
+
+	center( regionName, height = 1 )
+	{
+
+		if( this.regions[regionName]===undefined )
+			throw `Unknown regions id '${regionName}'`;
+		
+		var minX =  Infinity,
+			maxX = -Infinity,
+			minZ =  Infinity,
+			maxZ = -Infinity;
+			
+		var x = 0,
+			z = 0;
+			
+		for( var point of this.points[regionName] )
+		{
+			x += point.x;
+			z += point.y;
+			
+			minX = Math.min( minX, point.x );
+			maxX = Math.max( maxX, point.x );
+			minZ = Math.min( minZ, point.y );
+			maxZ = Math.max( maxZ, point.y );
+		}
+			/*	
+		return new THREE.Vector3(
+			this.mapScale*x/this.points[regionName].length + this.mapCenter.x,
+			height,
+			this.mapScale*z/this.points[regionName].length + this.mapCenter.z );
+		*/
+		return new THREE.Vector3(
+			this.mapScale*(minX+maxX)/2 + this.mapCenter.x,
+			height,
+			this.mapScale*(minZ+maxZ)/2 + this.mapCenter.z );
+		
+	} // Map.center
+	
+	
+	
 	
 } // Map
  
