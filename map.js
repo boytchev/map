@@ -21,6 +21,7 @@ export class Map
 		var that = this;
 		
 		this.points = {}; // THREE.Vector2 objects
+		this.labels = {}; // THREE.Vector2 object
 		this.regions = {}; // THREE.Shape objects
 		this.onLoad = onLoad; // called when the map regions are created
 		this.context = null;
@@ -65,7 +66,7 @@ export class Map
 			// extract points
 			function extractVectors( queryString )
 			{
-				var xmlPoints =  xmlElem.querySelectorAll( 'mxGeometry '+queryString );
+				var xmlPoints =  xmlElem.querySelectorAll( queryString );
 				
 				var result = [];
 				
@@ -88,10 +89,66 @@ export class Map
 			
 			// collect arra of all vertices
 			var points = [
-				...extractVectors( 'mxPoint[as="sourcePoint"' ),
-				...extractVectors( 'Array[as="points"] mxPoint' ),
+				...extractVectors( 'mxGeometry mxPoint[as="sourcePoint"' ),
+				...extractVectors( 'mxGeometry Array[as="points"] mxPoint' ),
 				//...extractVectors( 'mxPoint[as="targetPoint"' )
 			];
+			
+			// get label position
+			{
+				var closedPoints = [ ...points, ...extractVectors( 'mxPoint[as="targetPoint"' ) ];
+				var v = extractVectors( 'mxGeometry' )[0],
+					relativePos = v.x,
+					orthoDistance = v.y,
+					labelOffset = extractVectors( 'mxGeometry mxPoint[as="offset"' )[0];
+			
+//if( name=='SO' )
+//{
+//	console.log('relativePos',relativePos);
+//}
+				relativePos = 0.5 + relativePos/2; // [-1,1]->[0,1]
+				
+				// calculate path length
+				var sharpShape = new THREE.Shape( closedPoints );
+				var labelPos = sharpShape.getPointAt( relativePos );
+//if( name=='SO' )
+//{
+//	console.log('orthoDistance',orthoDistance);
+//	console.log('labelOffset',labelOffset);
+//	console.log('labelPos',labelPos);
+//}
+				var p1, p2;
+				if( relativePos>0.99 )
+				{
+					p1 = sharpShape.getPointAt( relativePos );
+					p2 = sharpShape.getPointAt( relativePos-0.01 );
+				}
+				else
+				{
+					p1 = sharpShape.getPointAt( relativePos+0.01 );
+					p2 = sharpShape.getPointAt( relativePos+0.001 );
+				}
+				var firstSegment = new THREE.Vector2().subVectors( p1, p2 );
+				var orthoSegment = new THREE.Vector2( firstSegment.y, -firstSegment.x );
+//if( name=='SO' )
+//{
+//	console.log('firstSegment',firstSegment);
+//	console.log('orthoSegment',orthoSegment);
+//}
+				orthoSegment.setLength( orthoDistance );
+//if( name=='SO' )
+//{
+//	console.log('orthoSegment',orthoSegment,orthoSegment.length());
+//}
+				labelPos.add( orthoSegment ).add( labelOffset );
+//if( name=='SO' )
+//{
+//	console.log('label+ortho+offset',labelPos);
+//}
+	
+				this.labels[name] = labelPos;
+			}
+			
 			
 			// fix sharp edges
 			for( var i=0; i<points.length; i++ )
@@ -233,6 +290,14 @@ export class Map
 
 		if( this.regions[regionName]===undefined )
 			throw `Unknown regions id '${regionName}'`;
+		
+		return new THREE.Vector3(
+			this.mapScale*this.labels[regionName].x + this.mapCenter.x,
+			height,
+			this.mapScale*this.labels[regionName].y + this.mapCenter.z
+		);
+
+
 		
 		var minX =  Infinity,
 			maxX = -Infinity,

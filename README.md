@@ -15,6 +15,7 @@ The library is implemented as a single `map.js` file.
       * [Region name](#region-name)
       * [Region outline](#region-outline)
       * [Region 3D shape](#region-3d-shape)
+      * [Region center](#region-center)
    * [XML Data](#xml-data)
    * [Examples](#examples)
      * [Outline of country](#outline-of-country)
@@ -22,6 +23,7 @@ The library is implemented as a single `map.js` file.
      * [Country and provinces](#country-and-provinces)
      * [Colored provinces](#colored-provinces)
      * [Elevated provinces](#elevated-provinces)
+     * [Water supply](#water-supply)
 
 
 ## Quick reference
@@ -146,7 +148,7 @@ suitable for creating `THREE.Line` lines. This method is used by
 map.region3D( regionName, height, color )
 ```
 
-The method `region2D` generates the 3D shape of
+The method `region3D` generates the 3D shape of
 the region called `regionName` as a `THREE.Mesh` object. Both
 `height` and `color` are optional and by default are `1` and `'white'`.
 
@@ -158,6 +160,20 @@ The method `geometry3D` generates the 3D shape of
 the region called `regionName` as a `THREE.BufferGeometry`
 suitable for creating `THREE.Mesh` objects. This method is used by
 `region3D`.
+
+That's all.
+
+
+### Region center
+
+```javascript
+map.center( regionName, height )
+```
+
+The method `center` returns the center of a region as indicated
+by the position of its label in the XML file. The return value
+is `THREE.Vector3`. It can be used to position labels and other
+objects in a region.
 
 That's all.
 
@@ -295,6 +311,41 @@ function drawMap( map )
 ```
 
 [<img src="examples/example-5.jpg" width="300">](https://boytchev.github.io/map/examples/example-5.html)
+
+
+#### Water supply
+
+Imaginary map of water supply per province.
+
+```javascript
+new Map( '../map.xml', drawMap );
+
+function drawMap( map )
+{
+  for( var regionName in map.regions )
+    if( regionName!='BG' )
+    {
+      var value = Math.random(),
+          color = new THREE.Color( value, value/2+0.5, 1 ),
+          radius = 1.5-value;
+
+      scene.add( map.region3D( regionName, 1, color ) );
+      scene.add( map.region2D( regionName, 1 ) );
+
+      var ball = new THREE.Mesh(
+         new THREE.IcosahedronGeometry( radius, 4 ),
+         new THREE.MeshPhysicalMaterial( {...} )
+      );
+
+      ball.position.copy( map.center( regionName, 1+radius ) );
+      ball.castShadow = true;
+
+      scene.add( ball );
+   }
+}
+```
+
+[<img src="examples/example-6.jpg" width="300">](https://boytchev.github.io/map/examples/example-6.html)
 
 
 September, 2021
