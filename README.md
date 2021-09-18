@@ -40,6 +40,8 @@ map.region3D( regionName, height, color ) // THREE.Mesh
 
 map.geometry2D( regionName ) // THREE.BufferGeometry
 map.geometry3D( regionName ) // THREE.BufferGeometry
+
+map.label2D( labelText, height, color ) // THREE.Mesh
 ```
 
 
