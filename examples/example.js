@@ -98,4 +98,4 @@ function animate( time )
 	renderer.render( scene, camera );
 }
 
-export {scene};
+export {renderer,scene};

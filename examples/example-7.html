@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+
+<!-- map.js: map with labels -->
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<script src="js/three.min.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="example.css">
+</head>
+
+<body>
+	<script>
+		const MAP_WIDTH = 45;
+		const MAP_HEIGHT = 28;
+	</script>
+
+	
+	<script type="module">
+	
+		import {Map} from '../map.js';
+		import {scene} from './example.js';
+
+
+		new Map( '../map.xml', drawMap );
+
+		var dictMap = { BG: 'България', BL: 'Благоевград', BU: 'Бургас', DO: 'Добрич', GA: 'Габрово', HA: 'Хасково', KA: 'Кърджали', KY: 'Кюстендил', LO: 'Ловеч', MO: 'Монтана', PA: 'Пазарджик', PE: 'Перник', PL: 'Пловдив', PN: 'Плевен', RA: 'Разград', RU: 'Русе', SF: 'София', SH: 'Шумен', SI: 'Силистра', SL: 'Сливен', SM: 'Смолян', SO: 'София обл.', ST: 'Ст. Загора', TA: 'Търговище', VA: 'Варна', VE: 'В. Търново', VI: 'Видин', VR: 'Враца', YA: 'Ямбол' };
+
+		function drawMap( map )
+		{
+			for( var regionName in map.regions )
+			{
+				var province = regionName!='BG';
+				
+				var value = 0.1+3*Math.random(),
+					color = new THREE.Color( 1, value/3, value/6 );
+					
+				if( regionName!='BG' )
+				{
+					scene.add( map.region3D( regionName, value, color ) );
+				}
+				
+					
+				var label = map.label2D( dictMap[regionName]||regionName, value, color );
+				
+				if( province )
+				{
+					label.position.copy( map.center( regionName, value ) );
+					label.scale.set( 0.8, 0.8, 0.8 );
+				}
+				else
+				{
+					label.position.copy( map.center( regionName, 0 ) );
+					label.scale.set( 2.5, 2.5, 2.5 );
+				}
+				
+				scene.add( label );
+			}
+		}
+		 
+		 
+	</script>
+</body>
+</html>
+
+

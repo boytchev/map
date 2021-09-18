@@ -332,6 +332,42 @@ export class Map
 	
 	
 	
+	label2D( text, height=1, color='black' )
+	{
+		
+		var textSize = 100;
+				
+		var canvas = document.createElement( 'canvas' ),
+			ctx = canvas.getContext( '2d' );
+			
+		ctx.font = `bold ${textSize}px arial`;
+					
+		var measure = ctx.measureText( text ),
+			textDX = Math.round( measure.actualBoundingBoxRight - measure.actualBoundingBoxLeft ),
+			textDY = Math.round( measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent );
+
+		canvas.width = textDX;
+		canvas.height = textDY;
+				
+		ctx.font = `bold ${textSize}px arial`;
+		ctx.fillStyle = 'white';
+		ctx.fillText( text, 0, textDY-measure.actualBoundingBoxDescent);
+
+		var texture = new THREE.CanvasTexture( canvas );
+			//texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+		var label = new THREE.Mesh( 
+			new THREE.PlaneGeometry( textDX/textSize, textDY/textSize ).rotateX( -Math.PI/2 ).translate( 0, 0.1, 0 ),
+			new THREE.MeshBasicMaterial({
+					color: color,
+					map: texture,
+					transparent: true,
+					alphaMap: texture,
+				})
+			);
+			
+		return label;
+		
+	} // Map.label2D
 	
 } // Map
  

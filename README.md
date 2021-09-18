@@ -15,6 +15,7 @@ The library is implemented as a single `map.js` file.
       * [Region name](#region-name)
       * [Region outline](#region-outline)
       * [Region 3D shape](#region-3d-shape)
+      * [Region label](#region-label)
       * [Region center](#region-center)
    * [XML Data](#xml-data)
    * [Examples](#examples)
@@ -24,6 +25,7 @@ The library is implemented as a single `map.js` file.
      * [Colored provinces](#colored-provinces)
      * [Elevated provinces](#elevated-provinces)
      * [Water supply](#water-supply)
+     * [Labels of provinces](#labels-of-provinces)
 
 
 ## Quick reference
@@ -161,7 +163,17 @@ the region called `regionName` as a `THREE.BufferGeometry`
 suitable for creating `THREE.Mesh` objects. This method is used by
 `region3D`.
 
-That's all.
+### Region label
+
+```javascript
+map.label2D( text, height, color )
+```
+
+The method `label2D` generates a 2D rectangular shape
+containing a given `text`. The shape is `THREE.Mesh` with
+`THREE.PlaneGeometry` geometry. Both `height` and `color`
+are optional and by default are `1` and `'black'`.
+
 
 
 ### Region center
@@ -346,6 +358,51 @@ function drawMap( map )
 ```
 
 [<img src="examples/example-6.jpg" width="300">](https://boytchev.github.io/map/examples/example-6.html)
+
+#### Labels of provinces
+
+```javascript
+new Map( '../map.xml', drawMap );
+
+var dictMap = {
+  BG: 'България',
+  BL: 'Благоевград',
+  BU: 'Бургас',
+   :
+  YA: 'Ямбол' };
+
+function drawMap( map )
+{
+  for( var regionName in map.regions )
+  {
+    var province = regionName!='BG';
+		
+    var value = 0.1+3*Math.random();
+    var color = new THREE.Color( 1, value/3, value/6 );
+			
+    if( regionName!='BG' )
+      scene.add( map.region3D( regionName, value, color ) );
+			
+    var label = map.label2D( dictMap[regionName], value, color );
+		
+    if( province )
+    {
+      label.position.copy( map.center( regionName, value ) );
+      label.scale.set( 0.8, 0.8, 0.8 );
+    }
+    else
+    {
+      label.position.copy( map.center( regionName, 0 ) );
+      label.scale.set( 2.5, 2.5, 2.5 );
+    }
+
+    scene.add( label );
+  }
+}
+
+```
+
+[<img src="examples/example-7.jpg" width="300">](https://boytchev.github.io/map/examples/example-7.html)
 
 
 September, 2021
