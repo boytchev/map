@@ -361,6 +361,8 @@ function drawMap( map )
 
 #### Labels of provinces
 
+The actual labels are stored in custom-defined dictionary map `dictMap`.
+
 ```javascript
 new Map( '../map.xml', drawMap );
 
@@ -383,7 +385,7 @@ function drawMap( map )
     if( regionName!='BG' )
       scene.add( map.region3D( regionName, value, color ) );
 			
-    var label = map.label2D( dictMap[regionName], value, color );
+    var label = map.label2D( dictMap[regionName], value );
 		
     if( province )
     {
