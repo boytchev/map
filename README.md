@@ -379,26 +379,15 @@ function drawMap( map )
 {
   for( var regionName in map.regions )
   {
-    var province = regionName!='BG';
-		
     var value = 0.1+3*Math.random();
     var color = new THREE.Color( 1, value/3, value/6 );
-			
-    if( regionName!='BG' )
-      scene.add( map.region3D( regionName, value, color ) );
+	
+    scene.add( map.region3D( regionName, value, color ) );
 			
     var label = map.label2D( dictMap[regionName], value );
-		
-    if( province )
-    {
-      label.position.copy( map.center( regionName, value ) );
-      label.scale.set( 0.8, 0.8, 0.8 );
-    }
-    else
-    {
-      label.position.copy( map.center( regionName, 0 ) );
-      label.scale.set( 2.5, 2.5, 2.5 );
-    }
+
+    label.position.copy( map.center( regionName, value ) );
+    label.scale.set( 0.8, 0.8, 0.8 );
 
     scene.add( label );
   }

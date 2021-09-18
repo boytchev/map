@@ -42,12 +42,18 @@
 				}
 				
 					
-				var label = map.label2D( dictMap[regionName]||regionName, value );
+				var label = map.label2D( dictMap[regionName], value );
+				var percent = map.label2D( Math.round(100*value/3.1)+'%', value, 'navy' );
 				
 				if( province )
 				{
 					label.position.copy( map.center( regionName, value ) );
 					label.scale.set( 0.8, 0.8, 0.8 );
+					
+					percent.position.copy( label.position );
+					percent.position.z += 0.8;
+					percent.scale.set( 0.7, 0.7, 0.7 );
+					scene.add( percent );
 				}
 				else
 				{
