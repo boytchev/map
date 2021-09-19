@@ -7,6 +7,15 @@ current map dataset is of Bulgaria and its provinces.
 
 The library is implemented as a single `map.js` file.
 
+[<img src="examples/example-1.jpg" width="100">](https://boytchev.github.io/map/examples/example-1.html)
+[<img src="examples/example-2.jpg" width="100">](https://boytchev.github.io/map/examples/example-2.html)
+[<img src="examples/example-3-ex.jpg" width="100">](https://boytchev.github.io/map/examples/example-3-ex.html)
+[<img src="examples/example-4.jpg" width="100">](https://boytchev.github.io/map/examples/example-4.html)
+[<img src="examples/example-5.jpg" width="100">](https://boytchev.github.io/map/examples/example-5.html)
+[<img src="examples/example-6.jpg" width="100">](https://boytchev.github.io/map/examples/example-6.html)
+[<img src="examples/example-7.jpg" width="100">](https://boytchev.github.io/map/examples/example-7.html)
+[<img src="examples/example-8.jpg" width="100">](https://boytchev.github.io/map/examples/example-8.html)
+
 
 ## Table of contents
    * [Quick reference](#quick-reference)
@@ -26,6 +35,7 @@ The library is implemented as a single `map.js` file.
      * [Elevated provinces](#elevated-provinces)
      * [Water supply](#water-supply)
      * [Labels of provinces](#labels-of-provinces)
+     * [Overlaying maps](#overlaying-maps)
 
 
 ## Quick reference
@@ -396,6 +406,30 @@ function drawMap( map )
 ```
 
 [<img src="examples/example-7.jpg" width="300">](https://boytchev.github.io/map/examples/example-7.html)
+
+
+#### Overlaying maps
+
+Map `map-ex.xml` provides outlines of provinces, map `example-8.xml` provices locations of towns.
+To have both maps with equal sizes and positions, they have the same region for the whole country.
+
+```javascript
+new Map( '../map-ex.xml', loadSubmap );
+		
+function loadSubmap( map )
+{
+  mainMap = map;
+  new Map( 'example-8.xml', drawMap );
+}
+
+function drawMap( overlayMap )
+{
+  // using mainMap and overlayMap
+  :
+}
+```
+
+[<img src="examples/example-8.jpg" width="300">](https://boytchev.github.io/map/examples/example-8.html)
 
 
 September, 2021
