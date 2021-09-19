@@ -410,7 +410,7 @@ function drawMap( map )
 
 #### Overlaying maps
 
-Map `map-ex.xml` provides outlines of provinces, map `example-8.xml` provices locations of towns.
+Map `map-ex.xml` provides outlines of provinces, map `example-8.xml` provides locations of towns.
 To have both maps with equal sizes and positions, they have the same region for the whole country.
 
 ```javascript
