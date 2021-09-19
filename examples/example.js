@@ -95,7 +95,8 @@ function onWindowResize( event )
 
 function animate( time )
 {
+		
 	renderer.render( scene, camera );
 }
 
-export {renderer,scene};
+export {renderer, scene, camera, controls};

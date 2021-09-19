@@ -357,6 +357,7 @@ export class Map
 					map: texture,
 					transparent: true,
 					alphaMap: texture,
+					side: THREE.DoubleSide,
 				})
 			);
 			

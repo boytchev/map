@@ -20,9 +20,9 @@
 	<script type="module">
 	
 		import {Map} from '../map.js';
-		import {scene} from './example.js';
+		import {scene, camera} from './example.js';
 
-		var mainMap;
+		var mainMap, labels=[];
 		
 		new Map( '../map-ex.xml', loadSubmap );
 		
@@ -34,37 +34,63 @@
 
 		function drawMap( overlayMap )
 		{
-			console.log( 'overlay', overlayMap );
 			// draw Bulgaria as 3D plate
-			scene.add( mainMap.region3D( 'BG', 1, 'crimson' ) );
+			scene.add( mainMap.region3D( 'BG', 1, 'black' ) );
 	
 			// draw provinces outlines
 			for( var regionName in mainMap.regions )
 				if( regionName!='BG' )
-					scene.add( mainMap.region2D( regionName ) );
+					scene.add( mainMap.region2D( regionName, 1, 'gray' ) );
 
 			// draw overlay map
 			for( var regionName in overlayMap.regions )
 				if( regionName!='BG' )
 				{
-					var value = 0.1;
+					var value = 0.1+2*Math.pow( Math.random(), 20 );
 					
-					var ball = new THREE.Mesh(
-							new THREE.CylinderGeometry( 0.3, 0.4, value, 16 ).translate( 0, value/2, 0 ),
+					var cone = new THREE.Mesh(
+							new THREE.CylinderGeometry( 0.3+value/3, 0.4+value/2, value, 40 ).translate( 0, value/2, 0 ),
 							new THREE.MeshPhysicalMaterial( {
-									color: 'pink',
-									roughness: 0.2,
-									metalness: 1,
+									color: new THREE.Color( 2, 1, 0 ),
+									roughness: 0.3,
+									metalness: 0.8,
 							} )
 						);
 						
-					ball.position.copy( overlayMap.center( regionName, 1 ) );
-					ball.castShadow = true;
-					scene.add( ball );
+					cone.position.copy( overlayMap.center( regionName, 1 ) );
+					scene.add( cone );
 				}
 					
+			// draw tubes
+			var names = Object.keys(overlayMap.regions);
+
+			for( var r1=0; r1<names.length-2; r1++ )
+			{
+				var p1 = overlayMap.center( names[r1], 1 );
+				
+				for( var r2=r1+1; r2<names.length-1; r2++)
+				{
+					var p2 = overlayMap.center( names[r2], 1 );
+					var distance = p1.distanceTo(p2);
+					
+					if( Math.random() < 0.8/distance/distance )
+					{
+						var tube = new THREE.Mesh(
+										new THREE.TorusGeometry( distance/2, 0.03, 8, 40, Math.PI ),
+										new THREE.MeshPhongMaterial( {color: 'orange'} )
+									);
+						tube.position.addVectors( p1, p2 ).divideScalar( 2 );
+						tube.rotation.y = -Math.atan2( p2.z-p1.z, p2.x-p1.x );
+						tube.scale.y = 1;
+						scene.add( tube );
+					};
+				}
+				
+			}
+			
 		}
-		 
+
+
 	</script>
 </body>
 </html>
