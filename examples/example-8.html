@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+
+<!-- map.js: overlapping maps -->
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<script src="js/three.min.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="example.css">
+</head>
+
+<body>
+	<script>
+		const MAP_WIDTH = 45;
+		const MAP_HEIGHT = 28;
+	</script>
+
+	
+	<script type="module">
+	
+		import {Map} from '../map.js';
+		import {scene} from './example.js';
+
+		var mainMap;
+		
+		new Map( '../map-ex.xml', loadSubmap );
+		
+		function loadSubmap( map )
+		{
+			mainMap = map;
+			new Map( 'example-8.xml', drawMap );
+		}
+
+		function drawMap( overlayMap )
+		{
+			console.log( 'overlay', overlayMap );
+			// draw Bulgaria as 3D plate
+			scene.add( mainMap.region3D( 'BG', 1, 'crimson' ) );
+	
+			// draw provinces outlines
+			for( var regionName in mainMap.regions )
+				if( regionName!='BG' )
+					scene.add( mainMap.region2D( regionName ) );
+
+			// draw overlay map
+			for( var regionName in overlayMap.regions )
+				if( regionName!='BG' )
+				{
+					var value = 0.1;
+					
+					var ball = new THREE.Mesh(
+							new THREE.CylinderGeometry( 0.3, 0.4, value, 16 ).translate( 0, value/2, 0 ),
+							new THREE.MeshPhysicalMaterial( {
+									color: 'pink',
+									roughness: 0.2,
+									metalness: 1,
+							} )
+						);
+						
+					ball.position.copy( overlayMap.center( regionName, 1 ) );
+					ball.castShadow = true;
+					scene.add( ball );
+				}
+					
+		}
+		 
+	</script>
+</body>
+</html>
+
+

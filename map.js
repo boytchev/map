@@ -87,6 +87,17 @@ export class Map
 				return result;
 			}
 			
+			// extract half size
+			function extractHalfSize( queryString )
+			{
+				var xmlPoint =  xmlElem.querySelectorAll( queryString )[0];
+				
+				var width = parseFloat( xmlPoint.getAttribute( 'width' ) || '2' ),
+					height = parseFloat( xmlPoint.getAttribute( 'height' ) || '2' );
+		
+				return new THREE.Vector2( width/2, height/2 );
+			}
+			
 			// collect arra of all vertices
 			var points = [
 				...extractVectors( 'mxGeometry mxPoint[as="sourcePoint"' ),
@@ -94,29 +105,22 @@ export class Map
 				//...extractVectors( 'mxPoint[as="targetPoint"' )
 			];
 			
-			// get label position
+			// if there is a custom shape get label position
+			if( points.length )
 			{
+				// get label position
 				var closedPoints = [ ...points, ...extractVectors( 'mxPoint[as="targetPoint"' ) ];
 				var v = extractVectors( 'mxGeometry' )[0],
 					relativePos = v.x,
 					orthoDistance = v.y,
 					labelOffset = extractVectors( 'mxGeometry mxPoint[as="offset"' )[0];
 			
-//if( name=='SO' )
-//{
-//	console.log('relativePos',relativePos);
-//}
 				relativePos = 0.5 + relativePos/2; // [-1,1]->[0,1]
 				
 				// calculate path length
 				var sharpShape = new THREE.Shape( closedPoints );
 				var labelPos = sharpShape.getPointAt( relativePos );
-//if( name=='SO' )
-//{
-//	console.log('orthoDistance',orthoDistance);
-//	console.log('labelOffset',labelOffset);
-//	console.log('labelPos',labelPos);
-//}
+
 				var p1, p2;
 				if( relativePos>0.99 )
 				{
@@ -130,26 +134,22 @@ export class Map
 				}
 				var firstSegment = new THREE.Vector2().subVectors( p1, p2 );
 				var orthoSegment = new THREE.Vector2( firstSegment.y, -firstSegment.x );
-//if( name=='SO' )
-//{
-//	console.log('firstSegment',firstSegment);
-//	console.log('orthoSegment',orthoSegment);
-//}
+
 				orthoSegment.setLength( orthoDistance );
-//if( name=='SO' )
-//{
-//	console.log('orthoSegment',orthoSegment,orthoSegment.length());
-//}
 				labelPos.add( orthoSegment ).add( labelOffset );
-//if( name=='SO' )
-//{
-//	console.log('label+ortho+offset',labelPos);
-//}
-	
+
 				this.labels[name] = labelPos;
-			}
+			} // if( points.length )
+			else
+			{
+				this.labels[name] = new THREE.Vector2().addVectors(
+					extractVectors( 'mxGeometry' )[0],
+					extractHalfSize( 'mxGeometry' ),
+				);
+			} // if( !points.length )
 			
-			
+			//console.log(name,this.labels[name]);
+		
 			// fix sharp edges
 			for( var i=0; i<points.length; i++ )
 			{
@@ -169,36 +169,53 @@ export class Map
 				}
 						
 			}
-			
-			// generate rounded shape
-			var shape = new THREE.Shape( ),
-				roundness =  this.options.roundness;
 
-			var v = new THREE.Vector2();
-			
-			function lerp( idx1, idx2, start )
+			// if there is a custom shape, make it round
+			if( points.length )
 			{
-				var distance = points[idx1].distanceTo(points[idx2]),
-					alpha = THREE.Math.clamp( roundness/distance, 0, 0.5 );
-				v.lerpVectors( points[idx1], points[idx2], start?alpha:1-alpha );
-			}
-			
-			lerp( 0, 1, true );
-			shape.moveTo( v.x, v.y );
+				// generate rounded shape
+				var shape = new THREE.Shape( ),
+					roundness =  this.options.roundness;
 
-			for( var i=0; i<points.length; i++ )
+				var v = new THREE.Vector2();
+				
+				function lerp( idx1, idx2, start )
+				{
+					var distance = points[idx1].distanceTo(points[idx2]),
+						alpha = THREE.Math.clamp( roundness/distance, 0, 0.5 );
+					v.lerpVectors( points[idx1], points[idx2], start?alpha:1-alpha );
+				}
+				
+				lerp( 0, 1, true );
+				shape.moveTo( v.x, v.y );
+
+				for( var i=0; i<points.length; i++ )
+				{
+					var i1 = (i+1)%points.length,
+						i2 = (i+2)%points.length;
+					
+					lerp( i, i1, false );
+					shape.lineTo( v.x, v.y );
+					
+					lerp( i1, i2, true );
+					shape.quadraticCurveTo( points[i1].x, points[i1].y, v.x, v.y );
+				}			
+			} // if( points.length )
+			else
 			{
-				var i1 = (i+1)%points.length,
-					i2 = (i+2)%points.length;
+				var shape = new THREE.Shape( ),
+					v = this.labels[name];
+					
+				shape.moveTo( v.x, v.y+5 );
+				shape.quadraticCurveTo( v.x-5, v.y+5, v.x-5, v.y );
+				shape.quadraticCurveTo( v.x-5, v.y-5, v.x, v.y-5 );
+				shape.quadraticCurveTo( v.x+5, v.y-5, v.x+5, v.y );
+				shape.quadraticCurveTo( v.x+5, v.y+5, v.x, v.y+5 );
 				
-				lerp( i, i1, false );
-				shape.lineTo( v.x, v.y );
-				
-				lerp( i1, i2, true );
-				shape.quadraticCurveTo( points[i1].x, points[i1].y, v.x, v.y );
-			}			
-
+			} // if( !points.length )
+			
 			this.regions[name] = shape;
+			
 			this.points[name] = points;
 		}
 
@@ -287,47 +304,25 @@ export class Map
 
 	center( regionName, height = 1 )
 	{
-
+		var point;
+		
 		if( this.regions[regionName]===undefined )
-			throw `Unknown regions id '${regionName}'`;
-		
-		return new THREE.Vector3(
-			this.mapScale*this.labels[regionName].x + this.mapCenter.x,
-			height,
-			this.mapScale*this.labels[regionName].y + this.mapCenter.z
-		);
-
-
-		
-		var minX =  Infinity,
-			maxX = -Infinity,
-			minZ =  Infinity,
-			maxZ = -Infinity;
-			
-		var x = 0,
-			z = 0;
-			
-		for( var point of this.points[regionName] )
 		{
-			x += point.x;
-			z += point.y;
+			if( this.points[regionName]===undefined )
+				throw `Unknown regions id '${regionName}'`;
 			
-			minX = Math.min( minX, point.x );
-			maxX = Math.max( maxX, point.x );
-			minZ = Math.min( minZ, point.y );
-			maxZ = Math.max( maxZ, point.y );
+			point = this.points[regionName][0];
 		}
-			/*	
-		return new THREE.Vector3(
-			this.mapScale*x/this.points[regionName].length + this.mapCenter.x,
-			height,
-			this.mapScale*z/this.points[regionName].length + this.mapCenter.z );
-		*/
-		return new THREE.Vector3(
-			this.mapScale*(minX+maxX)/2 + this.mapCenter.x,
-			height,
-			this.mapScale*(minZ+maxZ)/2 + this.mapCenter.z );
+		else
+		{
+			point = this.labels[regionName];
+		}
 		
+		return new THREE.Vector3(
+			this.mapScale*point.x + this.mapCenter.x,
+			height,
+			this.mapScale*point.y + this.mapCenter.z
+		);
 	} // Map.center
 	
 	
