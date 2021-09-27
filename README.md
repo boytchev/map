@@ -15,6 +15,7 @@ The library is implemented as a single `map.js` file.
 [<img src="examples/example-6.jpg" width="100">](https://boytchev.github.io/map/examples/example-6.html)
 [<img src="examples/example-7.jpg" width="100">](https://boytchev.github.io/map/examples/example-7.html)
 [<img src="examples/example-8.jpg" width="100">](https://boytchev.github.io/map/examples/example-8.html)
+[<img src="examples/example-9.jpg" width="100">](https://boytchev.github.io/map/examples/example-9.html)
 
 
 ## Table of contents
@@ -36,6 +37,7 @@ The library is implemented as a single `map.js` file.
      * [Water supply](#water-supply)
      * [Labels of provinces](#labels-of-provinces)
      * [Overlaying maps](#overlaying-maps)
+     * [Procedural maps](#pricedural-maps)
 
 
 ## Quick reference
@@ -430,6 +432,43 @@ function drawMap( overlayMap )
 ```
 
 [<img src="examples/example-8.jpg" width="300">](https://boytchev.github.io/map/examples/example-8.html)
+
+
+#### Procedural maps
+
+Example of number of undergraduate programs in the 16 faculties of Sofia University. The map if faculties
+is generated procedurally.
+
+```javascript
+// names of Sofia University and its faculties
+var names = ['СУ', 'ИФ', 'ФФ', 'ФКНФ', ...];
+
+// number of undergraduate programs 
+var values = [123, 9, 10, 22, ...];
+
+// generate a procedural map
+var proceduralMap = {};
+{
+	var dAngle = 2*Math.PI/(names.length-1);
+	
+	function x( radius, angle ) { return radius*Math.cos( dAngle*angle ); }
+	function y( radius, angle ) { return radius*Math.sin( dAngle*angle ); }
+	
+	proceduralMap[names[0]] = {shape: [], label: [0,0]};
+		
+	for( var i=1; i<names.length; i++ )
+		proceduralMap[names[i]] = {
+			shape: [ x(10,i), y(10,i), x(25,i), y(25,i), x(25,i+1), y(25,i+1), x(10,i+1), y(10,i+1) ],
+			label: [ x(20,i+0.5), y(20,i+0.5) ]
+		};
+}
+
+// map of faculties
+var map = new Map( proceduralMap, null, {roundness:5} );
+:
+```
+
+[<img src="examples/example-9.jpg" width="300">](https://boytchev.github.io/map/examples/example-9.html)
 
 
 September, 2021

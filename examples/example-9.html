@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+
+<!-- map.js: procedural maps -->
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<script src="js/three.min.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<link rel="stylesheet" href="example.css">
+</head>
+
+<body>
+	<script>
+		// names of Sofia University and its faculties
+		var names = ['СУ', 'ИФ', 'ФФ', 'ФКНФ', 'ФСлФ', 'ЮФ', 'ФП', 'ФНОИ', 'ФЖМК', 'БогФ', 'СтФ', 'ФМИ', 'ФзФ', 'ФХФ', 'БФ', 'ГГФ', 'МФ'];
+		
+		// number of undergraduate programs 
+		var values = [123, 9, 10, 22, 9, 1, 3, 13, 4, 2, 3, 8, 14, 7, 9, 7, 2];
+	</script>
+
+
+	<script>
+		const MAP_WIDTH = 30;
+		const MAP_HEIGHT = 30;
+	</script>
+
+	
+	<script type="module">
+		import {Map} from '../map.js';
+		import {scene, camera, renderer, controls} from './example.js';
+
+
+		// generate a procedural map
+		var proceduralMap = {};
+		{
+			var dAngle = 2*Math.PI/(names.length-1);
+			
+			function x( radius, angle ) { return radius*Math.cos( dAngle*angle ); }
+			function y( radius, angle ) { return radius*Math.sin( dAngle*angle ); }
+			
+			proceduralMap[names[0]] = {shape: [], label: [0,0]};
+				
+			for( var i=1; i<names.length; i++ )
+				proceduralMap[names[i]] = {
+					shape: [ x(10,i), y(10,i), x(25,i), y(25,i), x(25,i+1), y(25,i+1), x(10,i+1), y(10,i+1) ],
+					label: [ x(20,i+0.5), y(20,i+0.5) ]
+				};
+		}
+		
+		
+		// map of faculties
+		var map = new Map( proceduralMap, null, {roundness:5} );
+		
+		// collection of all labels
+		var pos, label, labels = [];
+		
+		// university name
+		label = map.label2D( names[0], 0, 'black' ); 
+		pos = map.center( names[0], 0 );
+		label.position.copy( pos );
+		label.scale.set( 3, 1, 3 );
+		labels.push( label );
+
+		// university value
+		label = map.label2D( values[0], 0, 'black' ); 
+		label.geometry.translate( 0, 0, 1 );
+		label.scale.set( 2, 1, 2 );
+		label.position.copy( pos );
+		labels.push( label );
+
+		// faculties
+		for( var i=1; i<names.length; i++ )
+		{
+			var color = new THREE.Color().setHSL( i/(names.length-1), 1, 0.5 ),
+				height = 30*values[i]/values[0],
+				pos = map.center( names[i], height );
+			
+			// faculty bar
+			scene.add( map.region3D( names[i], height, color ) );
+			scene.add( map.region2D( names[i], 0, 'black' ) );
+			scene.add( map.region2D( names[i], height, 'black' ) );
+			
+			// faculty name
+			label = map.label2D( names[i], height, 'black' ); 
+			label.position.copy( pos );
+			labels.push( label );
+
+			// faculty value
+			label = map.label2D( values[i], height, 'black' ); 
+			label.geometry.translate( 0, 0, 1 );
+			label.scale.set( 0.8, 1, 0.8 );
+			label.position.copy( pos );
+			labels.push( label );
+		}
+
+		// add all labels to the scene
+		scene.add( ...labels );
+		
+		// rotate labels when the viewpoint is changed
+		renderer.setAnimationLoop( time => 
+		{
+			for( var label of labels )
+				label.rotation.y = controls.getAzimuthalAngle();
+				
+			renderer.render( scene, camera );
+		} );
+
+	</script>
+</body>
+</html>
+
+

@@ -34,10 +34,21 @@ export class Map
 		if( this.options.width  === undefined ) this.options.width  = MAP_WIDTH  ? MAP_WIDTH  : 45;
 		if( this.options.height === undefined ) this.options.height = MAP_HEIGHT ? MAP_HEIGHT : 28;
 
-		fetch( xmlFilename )
-		  .then( response => response.text() )
-		  .then( text => that.#parseXML( new DOMParser().parseFromString(text,"text/xml") ) );
-
+		if( typeof xmlFilename === 'string' || xmlFilename instanceof String )
+		{
+			// xmlFilename is a name to an XML file containing the map description
+			fetch( xmlFilename )
+			  .then( response => response.text() )
+			  .then( text => that.#parseXML( new DOMParser().parseFromString(text,"text/xml") ) );
+		}
+		else
+		if( xmlFilename && typeof xmlFilename === 'object' && !Array.isArray(xmlFilename) )
+		{
+			this.#parseObject( xmlFilename );
+		}
+		else
+			throw 'Invalid first parameter of new Map(). It must be a name of XML file (i.e. a string) or a map object.';
+		
 	} // BGMap
  
  
@@ -217,7 +228,7 @@ export class Map
 			this.regions[name] = shape;
 			
 			this.points[name] = points;
-		}
+		} // for( var xmlElem of xmlElems )
 
 		this.mapScale = Math.min( this.options.width/(maxX-minX), this.options.height/(maxY-minY) );
 		this.mapCenter.x = -this.mapScale*(maxX+minX)/2;
@@ -229,6 +240,121 @@ export class Map
  
 
 	
+	// parses object into object with elements province names and values THREE.Shape
+	// object format:
+	//		{  province: {shape:[array of x and y coordinates],  province: [...], ... }
+	
+	#parseObject( object )
+	{
+		var minX = Infinity, maxX = -Infinity,
+			minY = Infinity, maxY = -Infinity;
+
+		for( var name in object )
+		{
+			// extract points
+			function extractVectors( data )
+			{
+				var result = [];
+
+				for( var i = 0; i<data.length; i+=2 )
+				{
+					var x = parseFloat( data[i] || '0' ),
+						y = parseFloat( data[i+1] || '0' );
+		
+					minX = Math.min( minX, x );
+					maxX = Math.max( maxX, x );
+					
+					minY = Math.min( minY, y );
+					maxY = Math.max( maxY, y );
+					
+					result.push( new THREE.Vector2( x, y ) );
+				}
+				
+				return result;
+			}
+			
+			// collect shape vertices and label position
+			var points = extractVectors( object[name].shape );
+			
+			this.labels[name] = extractVectors( object[name].label )[0];
+			
+			// fix sharp edges
+			for( var i=0; i<points.length; i++ )
+			{
+				var iPrevPrev = (i-2+points.length)%points.length,
+					iPrev     = (i-1+points.length)%points.length,
+					iNext     = (i+1)%points.length,
+					iNextNext = (i+2)%points.length;
+					
+				var distPrev = points[iPrev].distanceTo(points[i]),
+					distNext = points[iNext].distanceTo(points[i]);
+				
+				if( distPrev<7 && distNext<7 )
+				{
+					// point [i] is vertex, realign previous and next points
+					points[iPrev] = points[iPrev].lerpVectors( points[i], points[iPrevPrev], 0.001 );
+					points[iNext] = points[iNext].lerpVectors( points[i], points[iNextNext], 0.001 );
+				}
+						
+			}
+
+			if( points.length )
+			{
+				// generate rounded shape
+				var shape = new THREE.Shape( ),
+					roundness =  this.options.roundness;
+
+				var v = new THREE.Vector2();
+				
+				function lerp( idx1, idx2, start )
+				{
+					var distance = points[idx1].distanceTo(points[idx2]),
+						alpha = THREE.Math.clamp( roundness/distance, 0, 0.5 );
+					v.lerpVectors( points[idx1], points[idx2], start?alpha:1-alpha );
+				}
+				
+				lerp( 0, 1, true );
+				shape.moveTo( v.x, v.y );
+
+				for( var i=0; i<points.length; i++ )
+				{
+					var i1 = (i+1)%points.length,
+						i2 = (i+2)%points.length;
+					
+					lerp( i, i1, false );
+					shape.lineTo( v.x, v.y );
+					
+					lerp( i1, i2, true );
+					shape.quadraticCurveTo( points[i1].x, points[i1].y, v.x, v.y );
+				}			
+			} // if( points.length )
+			else
+			{
+				var shape = new THREE.Shape( ),
+					v = this.labels[name];
+					
+				shape.moveTo( v.x, v.y+5 );
+				shape.quadraticCurveTo( v.x-5, v.y+5, v.x-5, v.y );
+				shape.quadraticCurveTo( v.x-5, v.y-5, v.x, v.y-5 );
+				shape.quadraticCurveTo( v.x+5, v.y-5, v.x+5, v.y );
+				shape.quadraticCurveTo( v.x+5, v.y+5, v.x, v.y+5 );
+				
+			} // if( !points.length )
+				
+			this.regions[name] = shape;
+			this.points[name] = points;
+		} // for( var name of object )
+
+		this.mapScale = Math.min( this.options.width/(maxX-minX), this.options.height/(maxY-minY) );
+		this.mapCenter.x = -this.mapScale*(maxX+minX)/2;
+		this.mapCenter.z = -this.mapScale*(maxY+minY)/2;
+
+		if( this.onLoad ) this.onLoad( this );
+		
+	} // Map.parseObject
+
+
+
 	geometry3D( regionName )
 	{
 
@@ -278,7 +404,7 @@ export class Map
 			geometry = new THREE.BufferGeometry().setFromPoints( shape.extractPoints(12).shape )
 				.rotateX( Math.PI/2 )
 				.scale( this.mapScale, 1, this.mapScale )
-				.translate( this.mapCenter.x, 1.01, this.mapCenter.z );
+				.translate( this.mapCenter.x, 1, this.mapCenter.z );
 				
 		return geometry;
 		
@@ -292,7 +418,7 @@ export class Map
 			material = new THREE.LineBasicMaterial( {color: color} ),
 			region = new THREE.Line( geometry, material );
 			
-		region.scale.y = height||0.001;
+		region.scale.y = (height+0.01)||0.001;
 		region.castShadow = true;
 		region.receiveShadow = true;
 		
@@ -349,7 +475,7 @@ export class Map
 		ctx.fillText( text, 0, textDY-measure.actualBoundingBoxDescent);
 
 		var texture = new THREE.CanvasTexture( canvas );
-			//texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+			texture.anisotropy = 8;//renderer.capabilities.getMaxAnisotropy();
 		var label = new THREE.Mesh( 
 			new THREE.PlaneGeometry( textDX/textSize, textDY/textSize ).rotateX( -Math.PI/2 ).translate( 0, 0.1, 0 ),
 			new THREE.MeshBasicMaterial({
