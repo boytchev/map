@@ -114,15 +114,16 @@ new Map( customMap, drawMap, options )
 ```
 The structure of the custom map is:
 
-```json
+```jxml
 {
   name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
   name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
   :
 }
 ```
-where `name` is the name of a region, `shape` is an array of 3 or more 2D coordinates for the region
-and `label` is an array of one 2D coordinate of the region label.
+where `name` is the name of a region, `shape` is an array of 3 or more pairs of 2D coordinates
+(x1,y1), (x2,y2), ... defininf the outline of the region, and `label` is an array of one pair of
+2D coordinates (x,y) of the location of the region label.
 
 When a custom map is generated procedurally, it is possible to immediately use the result of the constructor,
 instead of providing a call-back drawing function.
