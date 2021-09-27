@@ -44,6 +44,7 @@ The library is implemented as a single `map.js` file.
 
 ```javascript
 new Map( xmlFilename, drawMap, options );
+new Map( customMap, drawMap, options );
 
 map.regions // [string, string, ...]
 
@@ -106,6 +107,29 @@ new Map( '../map.xml',
        );
 ```
 
+```javascript
+new Map( customMap, drawMap, options )
+```
+An alternative way of map construction is to provide a custom map instead of file name of XML file.
+The structure of the custom map is:
+```xml
+{
+  name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
+  name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
+  :
+}
+```
+where `name` is the name of a region, `shape` is an array of 3 or more 2D coordinates for the region
+and `label` is an array of one 2D coordinate of the region label.
+
+When a custom map is generated procedurally, it is possible to immediately use the result of the constructor,
+instead of providing a call-back drawing function.
+
+```javascript
+var map = new Map( proceduralMap );
+
+scene.add( map.region3D( ... ) ); 
+```
 
 ### Region name
 
