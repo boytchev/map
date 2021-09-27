@@ -114,7 +114,7 @@ new Map( customMap, drawMap, options )
 ```
 The structure of the custom map is:
 
-```xml
+```json
 {
   name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
   name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
