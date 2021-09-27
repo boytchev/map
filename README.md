@@ -107,11 +107,13 @@ new Map( '../map.xml',
        );
 ```
 
+An alternative way of map construction is to provide a custom map instead of file name of XML file.
+
 ```javascript
 new Map( customMap, drawMap, options )
 ```
-An alternative way of map construction is to provide a custom map instead of file name of XML file.
 The structure of the custom map is:
+
 ```xml
 {
   name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
