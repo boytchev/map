@@ -2,14 +2,19 @@
 // bgmap.js
 //
 // class Map
-//		constructor( xmlFilename, onLoad, {options} )
+//		constructor( xmlFilename, onLoad, options )
 //		geometry3D( regionName )
 //		geometry2D( regionName )
-//		region3D ( regionName, {height}, {color} )
-//		region2D ( regionName, {height}, {color} )
+//		region3D ( regionName, height, color )
+//		region2D ( regionName, height, color )
+//		label2D( regionName, text, height, color, scale, offset )
 //	private
 //		#parseXML( xml )
 
+
+const DEFAULT_MAP_WIDTH = 45;
+const DEFAULT_MAP_HEIGHT = 28;
+const DEFAULT_MAP_ROUNDNESS = 25;
 
 
 // load astnchonously XML file with map data
@@ -30,9 +35,9 @@ export class Map
 		this.mapCenter = {x:0, z:0};
 		this.options = options || {};
 		
-		if( this.options.roundness === undefined ) this.options.roundness = 25;
-		if( this.options.width  === undefined ) this.options.width  = MAP_WIDTH  ? MAP_WIDTH  : 45;
-		if( this.options.height === undefined ) this.options.height = MAP_HEIGHT ? MAP_HEIGHT : 28;
+		if( this.options.roundness === undefined ) this.options.roundness = DEFAULT_MAP_ROUNDNESS;
+		if( this.options.width  === undefined ) this.options.width  = DEFAULT_MAP_WIDTH;
+		if( this.options.height === undefined ) this.options.height = DEFAULT_MAP_HEIGHT;
 
 		if( typeof xmlFilename === 'string' || xmlFilename instanceof String )
 		{
@@ -75,7 +80,7 @@ export class Map
 			}
 
 			// extract points
-			function extractVectors( queryString )
+			function extractVectors( queryString, updateMinMax = true )
 			{
 				var xmlPoints =  xmlElem.querySelectorAll( queryString );
 				
@@ -85,12 +90,15 @@ export class Map
 				{
 					var x = parseFloat( xmlPoint.getAttribute( 'x' ) || '0' ),
 						y = parseFloat( xmlPoint.getAttribute( 'y' ) || '0' );
-		
-					minX = Math.min( minX, x );
-					maxX = Math.max( maxX, x );
-					
-					minY = Math.min( minY, y );
-					maxY = Math.max( maxY, y );
+						
+					if( updateMinMax )
+					{
+						minX = Math.min( minX, x );
+						maxX = Math.max( maxX, x );
+						
+						minY = Math.min( minY, y );
+						maxY = Math.max( maxY, y );
+					}
 					
 					result.push( new THREE.Vector2( x, y ) );
 				}
@@ -109,7 +117,7 @@ export class Map
 				return new THREE.Vector2( width/2, height/2 );
 			}
 			
-			// collect arra of all vertices
+			// collect array of all vertices
 			var points = [
 				...extractVectors( 'mxGeometry mxPoint[as="sourcePoint"' ),
 				...extractVectors( 'mxGeometry Array[as="points"] mxPoint' ),
@@ -121,10 +129,10 @@ export class Map
 			{
 				// get label position
 				var closedPoints = [ ...points, ...extractVectors( 'mxPoint[as="targetPoint"' ) ];
-				var v = extractVectors( 'mxGeometry' )[0],
+				var v = extractVectors( 'mxGeometry', false )[0],
 					relativePos = v.x,
 					orthoDistance = v.y,
-					labelOffset = extractVectors( 'mxGeometry mxPoint[as="offset"' )[0];
+					labelOffset = extractVectors( 'mxGeometry mxPoint[as="offset"', false )[0];
 			
 				relativePos = 0.5 + relativePos/2; // [-1,1]->[0,1]
 				
@@ -231,6 +239,7 @@ export class Map
 		} // for( var xmlElem of xmlElems )
 
 		this.mapScale = Math.min( this.options.width/(maxX-minX), this.options.height/(maxY-minY) );
+		
 		this.mapCenter.x = -this.mapScale*(maxX+minX)/2;
 		this.mapCenter.z = -this.mapScale*(maxY+minY)/2;
 
@@ -453,7 +462,7 @@ export class Map
 	
 	
 	
-	label2D( text, height=1, color='black' )
+	label2D( regionName, text, height=1, color='black', scale=1, offset=0 )
 	{
 		
 		var textSize = 100;
@@ -477,7 +486,7 @@ export class Map
 		var texture = new THREE.CanvasTexture( canvas );
 			texture.anisotropy = 8;//renderer.capabilities.getMaxAnisotropy();
 		var label = new THREE.Mesh( 
-			new THREE.PlaneGeometry( textDX/textSize, textDY/textSize ).rotateX( -Math.PI/2 ).translate( 0, 0.1, 0 ),
+			new THREE.PlaneGeometry( textDX/textSize, textDY/textSize ).rotateX( -Math.PI/2 ).translate( 0, 0.1, offset ),
 			new THREE.MeshBasicMaterial({
 					color: color,
 					map: texture,
@@ -487,6 +496,9 @@ export class Map
 				})
 			);
 			
+		label.position.copy( this.center( regionName, height ) );
+		label.scale.set( scale, 1, scale );
+		
 		return label;
 		
 	} // Map.label2D

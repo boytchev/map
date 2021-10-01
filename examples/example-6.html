@@ -11,12 +11,6 @@
 </head>
 
 <body>
-	<script>
-		const MAP_WIDTH = 45;
-		const MAP_HEIGHT = 28;
-	</script>
-
-	
 	<script type="module">
 	
 		import {Map} from '../map.js';
@@ -37,7 +31,7 @@
 					scene.add( map.region3D( regionName, 1, color ) );
 					scene.add( map.region2D( regionName, 1 ) );
 					
-					var ball = new THREE.Mesh(
+					var water = new THREE.Mesh(
 							new THREE.IcosahedronGeometry( radius, 4 ),
 							new THREE.MeshPhysicalMaterial( {
 									color: 'cyan',
@@ -54,9 +48,9 @@
 							} )
 						);
 						
-					ball.position.copy( map.center( regionName, 1+radius ) );
-					ball.castShadow = true;
-					scene.add( ball );
+					water.position.copy( map.center( regionName, 1+radius ) );
+					water.castShadow = true;
+					scene.add( water );
 				}
 		}
 		 

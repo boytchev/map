@@ -19,12 +19,6 @@
 		var values = [123, 9, 10, 22, 9, 1, 3, 13, 4, 2, 3, 8, 14, 7, 9, 7, 2];
 	</script>
 
-
-	<script>
-		const MAP_WIDTH = 30;
-		const MAP_HEIGHT = 30;
-	</script>
-
 	
 	<script type="module">
 		import {Map} from '../map.js';
@@ -50,48 +44,35 @@
 		
 		
 		// map of faculties
-		var map = new Map( proceduralMap, null, {roundness:5} );
+		var map = new Map( proceduralMap, null, {width:30, height:30, roundness:5} );
 		
 		// collection of all labels
 		var pos, label, labels = [];
-		
-		// university name
-		label = map.label2D( names[0], 0, 'black' ); 
-		pos = map.center( names[0], 0 );
-		label.position.copy( pos );
-		label.scale.set( 3, 1, 3 );
-		labels.push( label );
 
-		// university value
-		label = map.label2D( values[0], 0, 'black' ); 
-		label.geometry.translate( 0, 0, 1 );
-		label.scale.set( 2, 1, 2 );
-		label.position.copy( pos );
-		labels.push( label );
+		// university name and value
+		labels.push(
+			map.label2D( names[0], names[0], 0, 'black', 3 ),
+			map.label2D( names[0], values[0], 0, 'black', 2, 1.3 )
+		); 
 
 		// faculties
 		for( var i=1; i<names.length; i++ )
 		{
 			var color = new THREE.Color().setHSL( i/(names.length-1), 1, 0.5 ),
-				height = 30*values[i]/values[0],
-				pos = map.center( names[i], height );
+				height = 30*values[i]/values[0];
 			
-			// faculty bar
-			scene.add( map.region3D( names[i], height, color ) );
-			scene.add( map.region2D( names[i], 0, 'black' ) );
-			scene.add( map.region2D( names[i], height, 'black' ) );
+			// faculty bar and outlines (bottom and top)
+			scene.add(
+				map.region3D( names[i], height, color ),
+				map.region2D( names[i], 0, 'black' ),
+				map.region2D( names[i], height, 'black' )
+			);
 			
-			// faculty name
-			label = map.label2D( names[i], height, 'black' ); 
-			label.position.copy( pos );
-			labels.push( label );
-
-			// faculty value
-			label = map.label2D( values[i], height, 'black' ); 
-			label.geometry.translate( 0, 0, 1 );
-			label.scale.set( 0.8, 1, 0.8 );
-			label.position.copy( pos );
-			labels.push( label );
+			// faculty name and value
+			labels.push(
+				map.label2D( names[i], names[i], height, 'black' ),
+				map.label2D( names[i], values[i], height, 'black', 0.8, 1.3 )
+			);
 		}
 
 		// add all labels to the scene

@@ -11,40 +11,34 @@
 </head>
 
 <body>
-	<script>
-		const MAP_WIDTH = 45;
-		const MAP_HEIGHT = 28;
-	</script>
-
-	
 	<script type="module">
 	
 		import {Map} from '../map.js';
 		import {scene, camera} from './example.js';
 
-		var mainMap, labels=[];
+		var countryMap, labels=[];
 		
-		new Map( '../map-ex.xml', loadSubmap );
+		new Map( '../map-ex.xml', loadCityMap );
 		
-		function loadSubmap( map )
+		function loadCityMap( map )
 		{
-			mainMap = map;
+			countryMap = map;
 			new Map( 'example-8.xml', drawMap );
 		}
 
-		function drawMap( overlayMap )
+		function drawMap( cityMap )
 		{
 			// draw Bulgaria as 3D plate
-			scene.add( mainMap.region3D( 'BG', 1, 'black' ) );
+			scene.add( countryMap.region3D( 'BG', 1, 'black' ) );
 	
 			// draw provinces outlines
-			for( var regionName in mainMap.regions )
+			for( var regionName in countryMap.regions )
 				if( regionName!='BG' )
-					scene.add( mainMap.region2D( regionName, 1, 'gray' ) );
+					scene.add( countryMap.region2D( regionName, 1, 'gray' ) );
 
-			// draw overlay map
-			for( var regionName in overlayMap.regions )
-				if( regionName!='BG' )
+			// draw overlay map with city locations
+			for( var cityName in cityMap.regions )
+				if( cityName!='BG' )
 				{
 					var value = 0.1+2*Math.pow( Math.random(), 20 );
 					
@@ -57,20 +51,20 @@
 							} )
 						);
 						
-					cone.position.copy( overlayMap.center( regionName, 1 ) );
+					cone.position.copy( cityMap.center( cityName, 1 ) );
 					scene.add( cone );
 				}
 					
 			// draw tubes
-			var names = Object.keys(overlayMap.regions);
+			var names = Object.keys(cityMap.regions);
 
 			for( var r1=0; r1<names.length-2; r1++ )
 			{
-				var p1 = overlayMap.center( names[r1], 1 );
+				var p1 = cityMap.center( names[r1], 1 );
 				
 				for( var r2=r1+1; r2<names.length-1; r2++)
 				{
-					var p2 = overlayMap.center( names[r2], 1 );
+					var p2 = cityMap.center( names[r2], 1 );
 					var distance = p1.distanceTo(p2);
 					
 					if( Math.random() < 0.8/distance/distance )

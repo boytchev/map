@@ -57,6 +57,8 @@ var controls = new THREE.OrbitControls( camera, renderer.domElement );
 			
 var MAP_THICK = 1,
 	MAP_PADDING = 4,
+	MAP_WIDTH = 45,
+	MAP_HEIGHT = 28,
 	geometry = new THREE.BoxGeometry(
 				MAP_WIDTH + 2*MAP_PADDING,
 				MAP_THICK,
