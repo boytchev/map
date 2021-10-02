@@ -6,7 +6,7 @@ implemented as a single `map.js` file.
 
 ### Table of contents
 
-* [**Quick reference**](#quick-reference): [examples](preview-of-examples) and [API](preview-of-the-api)
+* [**Quick reference**](#quick-reference): [examples](#preview-of-examples) and [API](#preview-of-the-api)
 * [**API**](#api): [constructor](#constructor), [names](#region-names), [shapes](#region-shapes), [labels](#region-label) and [centers](#region-center)
 * [**Data**](#map-data): [XML](#xml-data) and [object](#object-data)
 * [**Examples**](#examples)
