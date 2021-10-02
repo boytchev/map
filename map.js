@@ -3,6 +3,7 @@
 //
 // class Map
 //		constructor( xmlFilename, onLoad, options )
+//		constructor( object, onLoad, options )
 //		geometry3D( regionName )
 //		geometry2D( regionName )
 //		region3D ( regionName, height, color )
@@ -10,6 +11,7 @@
 //		label2D( regionName, text, height, color, scale, offset )
 //	private
 //		#parseXML( xml )
+//		#parseObject( object )
 
 
 const DEFAULT_MAP_WIDTH = 45;
