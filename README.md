@@ -260,7 +260,7 @@ extract the coordinates and generates a small circle as a shape.
 When the map data is provided as a Javascript object it must have
 the following structure:
 
-```jxml
+```js
 {
   name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
   name: {shape:[x1, y1, x2, y2, ...], label: [x,y]},
